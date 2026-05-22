@@ -4,21 +4,24 @@ globalCursor.setAttribute("aria-hidden", "true");
 document.body.appendChild(globalCursor);
 
 let cursorVisible = false;
+const isTouchDevice = window.matchMedia("(hover: none)").matches;
 
-window.addEventListener("pointermove", (event) => {
-  if (!cursorVisible) {
-    cursorVisible = true;
-    globalCursor.classList.add("is-visible");
-  }
+if (!isTouchDevice) {
+  window.addEventListener("pointermove", (event) => {
+    if (!cursorVisible) {
+      cursorVisible = true;
+      globalCursor.classList.add("is-visible");
+    }
 
-  globalCursor.style.left = `${event.clientX}px`;
-  globalCursor.style.top = `${event.clientY}px`;
-});
+    globalCursor.style.left = `${event.clientX}px`;
+    globalCursor.style.top = `${event.clientY}px`;
+  });
 
-window.addEventListener("pointerleave", () => {
-  cursorVisible = false;
-  globalCursor.classList.remove("is-visible");
-});
+  window.addEventListener("pointerleave", () => {
+    cursorVisible = false;
+    globalCursor.classList.remove("is-visible");
+  });
+}
 
 // ─────────────────────────────────────────────────────────
 // 网易云音乐 — 最近播放 (via NeteaseCloudMusicApi on Vercel)
