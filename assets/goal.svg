@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-label="Goal">
+  <circle cx="48" cy="48" r="35" fill="#fffdf8" stroke="#d9ddd6" stroke-width="3"></circle>
+  <circle cx="48" cy="48" r="22" fill="none" stroke="#2f6b4f" stroke-width="7"></circle>
+  <circle cx="48" cy="48" r="8" fill="#a34f3f"></circle>
+  <path d="M61 35 76 20M75 21v14M75 21H61" fill="none" stroke="#b3822f" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 520" role="img" aria-label="Abstract portrait">
+  <rect x="32" y="32" width="456" height="456" rx="64" fill="#fffdf8"></rect>
+  <rect x="32" y="32" width="456" height="456" rx="64" fill="none" stroke="#d9ddd6" stroke-width="4"></rect>
+  <circle cx="260" cy="184" r="82" fill="#2f5d86"></circle>
+  <path d="M135 430c17-88 67-134 125-134s108 46 125 134H135Z" fill="#2f6b4f"></path>
+  <path d="M172 175c27-70 84-92 156-62 3 45-13 70-47 78-34 8-71 3-109-16Z" fill="#20242a"></path>
+  <circle cx="374" cy="128" r="26" fill="#b3822f"></circle>
+  <path d="M111 119c18-26 44-43 76-50" fill="none" stroke="#a34f3f" stroke-width="15" stroke-linecap="round"></path>
+  <path d="M348 390c30-21 53-48 68-81" fill="none" stroke="#f3c96d" stroke-width="15" stroke-linecap="round"></path>
+</svg>

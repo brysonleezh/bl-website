@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Now | Bowen Li</title>
+    <meta
+      name="description"
+      content="A current snapshot of what Bowen Li is building, listening to, playing, and thinking about."
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="index.html#home" aria-label="Back to home">
+        <img src="assets/profile.jpeg" srcset="assets/profile.jpeg 1x, assets/profile@2x.jpeg 2x" alt="Bowen Li" />
+        <span>Bowen Li</span>
+      </a>
+      <nav class="nav" aria-label="Primary navigation">
+        <a href="index.html#home">Home</a>
+        <a href="now.html" class="active">Now</a>
+        <!-- <a href="interests.html">Interest</a> -->
+        <a href="assets/BowenLi.pdf">Resume</a>
+      </nav>
+    </header>
+
+    <main class="page">
+      <section class="now-page" aria-labelledby="now-title">
+
+        <!-- Right Now -->
+        <div class="now-rightnow">
+          <!-- <span class="card-kicker">Right Now</span> -->
+          <h1 id="now-title" class="rightnow-heading">Right Now.</h1>
+          <p class="rightnow-sub">The current starting lineup.</p>
+          <div class="rightnow-badge">
+            <span class="rightnow-dot"></span>
+            <span>Updated May 2026</span>
+          </div>
+        </div>
+
+        <!-- Bento grid -->
+        <div class="now-grid">
+
+          <!-- Music (span 2) — Netease API via Vercel proxy -->
+          <article class="now-card now-card-large now-music" aria-labelledby="music-title">
+            <div class="music-widget" data-music-widget>
+              <div class="music-head">
+                <div>
+                  <span class="card-kicker">Music</span>
+                  <h2 id="music-title">Top plays.</h2>
+                  <p class="music-source-line">Pulled live from NetEase Music API</p>
+
+                </div>
+                <span class="music-badge" data-music-badge>↻ Live · This week</span>
+              </div>
+
+              <div class="music-feature">
+                <div class="music-art" data-music-art aria-hidden="true">
+                  <span class="music-art-fallback">♪</span>
+                </div>
+                <div class="music-copy">
+                  <span class="music-play-label">Most played</span>
+                  <strong class="music-track-title" data-music-title>Set up Netease API</strong>
+                  <span class="music-track-artist" data-music-artist>See setup guide in main.js</span>
+                </div>
+              </div>
+
+              <ol class="music-track-list" data-music-track-list aria-label="Top tracks this week">
+                <li><span class="music-track-num">02</span><span><span class="music-track-name">—</span></span></li>
+                <li><span class="music-track-num">03</span><span><span class="music-track-name">—</span></span></li>
+              </ol>
+            </div>
+          </article>
+
+          <!-- Playing (span 1) -->
+          <article class="now-card now-game">
+            <div class="playing-cover">
+              <img src="assets/pokopeia.JPG" alt="Pokopia gameplay screenshot" />
+            </div>
+            <div class="playing-info">
+              <span class="card-kicker">Game</span>
+              <h2>Pokémon Pokopia</h2>
+              <span class="platform-badge">Check my land<svg class="arrow-svg" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 7h8M8 3.5L11.5 7 8 10.5"/></svg></span>
+            </div>
+          </article>
+
+          <!-- Travel (span 2) -->
+          <article class="now-card now-travel">
+            <div class="travel-board" aria-label="Travel photos">
+              <figure class="travel-photo travel-photo-one">
+                <img src="assets/korea.jpg" alt="Gyeongbokgung Gate, Seoul" />
+                <figcaption>Seoul</figcaption>
+              </figure>
+              <figure class="travel-photo travel-photo-two">
+                <img src="assets/japan-shibuya.jpg" alt="Shibuya crossing aerial view, Tokyo" />
+                <figcaption>Shibuya</figcaption>
+              </figure>
+              <figure class="travel-photo travel-photo-three">
+                <img src="assets/japan.jpg" alt="Sunset from Shibuya Sky, Tokyo" />
+                <figcaption>Tokyo</figcaption>
+              </figure>
+            </div>
+            <span class="card-kicker">Travel</span>
+            <h2>South Korea &amp; Japan</h2>
+            <div id="travel-map" class="travel-map-el"></div>
+          </article>
+
+          <!-- Reading / 1984 (span 1) -->
+          <article class="now-card now-book">
+            <span class="card-kicker">Reading</span>
+            <div class="book-display">
+              <div class="book-cover-slot" aria-hidden="true">
+                <img src="assets/1984.jpg" alt="1984 by George Orwell" class="book-cover-img" />
+                <div class="book-cover-fallback">
+                  <span class="book-title-art">1984</span>
+                </div>
+              </div>
+            </div>
+            <h2>1984</h2>
+            <p class="book-author-line">George Orwell</p>
+          </article>
+
+          <!-- News / Guardian (span 3, full width) -->
+          <article class="now-card now-reading" aria-labelledby="reading-title">
+            <div class="reading-head">
+              <div>
+                <span class="card-kicker">News</span>
+                <h2 id="reading-title">In the news.</h2>
+              </div>
+              <span class="reading-badge">The Guardian</span>
+            </div>
+            <div class="reading-grid" data-reading-grid aria-label="The Athletic articles">
+              <p class="reading-placeholder">—</p>
+            </div>
+          </article>
+
+          <!-- Watching (span 3) -->
+          <article class="now-card now-watching">
+            <span class="card-kicker">Watching</span>
+            <h2>Netflix queue.</h2>
+            <div class="watch-poster-grid" aria-label="Netflix list">
+              <div class="watch-poster">
+                <img src="assets/watching/american-manhunt.jpg" alt="American Manhunt: Osama Bin Laden" loading="lazy" />
+                <span class="watch-poster-title">American Manhunt: Osama Bin Laden</span>
+              </div>
+              <div class="watch-poster">
+                <img src="assets/watching/pokemon-indigo.jpg" alt="Pokémon Indigo League" loading="lazy" />
+                <span class="watch-poster-title">Pokémon Indigo League</span>
+              </div>
+              <div class="watch-poster">
+                <img src="assets/watching/singles-inferno.jpg" alt="Single's Inferno" loading="lazy" />
+                <span class="watch-poster-title">Single's Inferno</span>
+              </div>
+              <div class="watch-poster">
+                <img src="assets/watching/turning-point.jpg" alt="Turning Point: The Vietnam War" loading="lazy" />
+                <span class="watch-poster-title">Turning Point: The Vietnam War</span>
+              </div>
+            </div>
+          </article>
+
+        </div>
+      </section>
+    </main>
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <span class="footer-name">Bowen Li</span>
+        <div class="footer-contacts">
+          <a href="mailto:bowenlizh@gmail.com">bowenlizh@gmail.com</a>
+          <span class="footer-sep">|</span>
+          <a href="mailto:bli61001@usc.edu" class="footer-usc">bli61001@usc.edu <span class="footer-usc-badge">USC</span></a>
+          <span class="footer-sep">|</span>
+          <a href="tel:+13236305773">+1 (323) 630-5773</a>
+        </div>
+        <span class="footer-copy">© 2026</span>
+      </div>
+    </footer>
+
+    <script src="main.js"></script>
+  </body>
+</html>
