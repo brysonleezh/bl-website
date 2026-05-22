@@ -109,6 +109,17 @@ a {
   color: var(--coral);
 }
 
+.nav-book {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 14px;
+  border: 2px solid var(--coral);
+  border-radius: 999px;
+  color: var(--coral) !important;
+  white-space: nowrap;
+  line-height: 1;
+}
+
 .page {
   width: min(1120px, calc(100% - 36px));
   margin: 0 auto;
