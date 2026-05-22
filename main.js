@@ -353,30 +353,28 @@ if (!isTouchDevice) {
   var full = el.textContent.trim();
   el.textContent = "";
 
+  var textNode = document.createTextNode("");
   var cursor = document.createElement("span");
   cursor.className = "type-cursor";
+  el.appendChild(textNode);
   el.appendChild(cursor);
 
   function type(i) {
     if (i < full.length) {
-      el.insertBefore(document.createTextNode(full[i]), cursor);
+      textNode.nodeValue = full.slice(0, i + 1);
       setTimeout(function () { type(i + 1); }, 75);
     } else {
-      // Pause then delete
       setTimeout(erase, 1800);
     }
   }
 
   function erase() {
-    var nodes = [];
-    el.childNodes.forEach(function (n) { if (n !== cursor) nodes.push(n); });
-    var j = nodes.length - 1;
+    var len = full.length;
     function del() {
-      if (j >= 0) {
-        el.removeChild(nodes[j--]);
+      if (len > 0) {
+        textNode.nodeValue = full.slice(0, --len);
         setTimeout(del, 45);
       } else {
-        // Pause then retype
         setTimeout(function () { type(0); }, 500);
       }
     }
