@@ -1241,6 +1241,7 @@ h1 {
 .now-music {
   background: #6b4a38;
   color: var(--white);
+  overflow: hidden;
 }
 
 .now-music .card-kicker {
@@ -1266,16 +1267,42 @@ h1 {
 
 .music-badge {
   display: inline-flex;
-  gap: 6px;
-  min-height: 32px;
+  gap: 7px;
+  min-height: 30px;
   align-items: center;
-  padding: 5px 12px;
-  border: 3px solid rgba(255, 253, 248, 0.25);
+  padding: 5px 14px;
+  border: none;
   border-radius: 999px;
-  color: var(--gold);
-  font-size: 0.76rem;
-  font-weight: 900;
+  background: rgba(0, 0, 0, 0.32);
+  color: rgba(255, 253, 248, 0.82);
+  font-size: 0.7rem;
+  font-weight: 600;
   white-space: nowrap;
+  letter-spacing: 0.025em;
+}
+
+.music-live-dot {
+  position: relative;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #22c55e;
+  flex-shrink: 0;
+}
+
+.music-live-dot::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 1.5px solid #22c55e;
+  opacity: 0;
+  animation: live-ring-pulse 2.2s ease-out infinite;
+}
+
+@keyframes live-ring-pulse {
+  0%   { transform: scale(0.5); opacity: 0.9; }
+  100% { transform: scale(2.4); opacity: 0; }
 }
 
 .music-feature {
@@ -1366,46 +1393,66 @@ h1 {
 }
 
 .music-play-label {
-  color: var(--gold);
-  font-size: 0.76rem;
-  font-weight: 900;
+  color: rgba(246, 189, 46, 0.65);
+  font-size: 0.6rem;
+  font-weight: 700;
   text-transform: uppercase;
+  letter-spacing: 0.1em;
 }
 
 .music-track-title {
   display: block;
   overflow-wrap: anywhere;
   color: var(--white);
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(1.1rem, 2.2vw, 1.6rem);
-  font-style: italic;
-  line-height: 1.15;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: clamp(1.05rem, 2.1vw, 1.5rem);
+  font-weight: 550;
+  letter-spacing: -0.015em;
+  line-height: 1.18;
 }
 
 .music-track-artist {
   display: block;
-  color: rgba(255, 253, 248, 0.6);
-  font-size: 0.88rem;
-  font-style: italic;
-  font-weight: 700;
+  color: rgba(255, 253, 248, 0.45);
+  font-size: 0.82rem;
+  font-weight: 450;
 }
 
 .music-track-list {
   display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
   margin: 0;
   padding: 0;
   list-style: none;
-  border-top: 1.5px solid rgba(255, 253, 248, 0.1);
+  border-top: 1px solid rgba(255, 253, 248, 0.14);
+  padding-top: 12px;
 }
 
 .music-track-list li {
   display: grid;
-  grid-template-columns: 22px minmax(0, 1fr);
-  gap: 8px;
+  grid-template-columns: 18px 28px minmax(0, 1fr) 24px;
+  gap: 6px;
   align-items: center;
   padding: 5px 4px;
-  border-bottom: 1px solid rgba(255, 253, 248, 0.07);
+  border-radius: 6px;
   transition: background 0.15s;
+}
+
+.music-track-thumb {
+  width: 28px;
+  height: 28px;
+  border-radius: 3px;
+  object-fit: cover;
+  background: rgba(255, 253, 248, 0.08);
+  flex-shrink: 0;
+}
+
+.music-track-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
 }
 
 .music-track-list li a {
@@ -1416,7 +1463,6 @@ h1 {
 
 .music-track-list li:hover {
   background: rgba(255, 253, 248, 0.05);
-  border-radius: 6px;
 }
 
 /* ── Play buttons ── */
@@ -1448,7 +1494,7 @@ h1 {
   font-size: 0.75rem;
 }
 .music-track-list li {
-  grid-template-columns: 22px minmax(0, 1fr) 26px;
+  grid-template-columns: 22px 28px minmax(0, 1fr) 26px;
 }
 
 /* ── Mini player bar ── */
@@ -1502,11 +1548,44 @@ h1 {
   transition: width 0.5s linear;
 }
 
-.music-source-line {
-  margin: 10px 0 0;
-  font-size: 0.68rem;
-  color: rgba(255, 253, 248, 0.3);
+.music-source-credit {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 10px;
+  color: rgba(255, 253, 248, 0.28);
+  font-size: 0.62rem;
+  font-weight: 600;
   letter-spacing: 0.03em;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.music-source-credit svg {
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+}
+
+.music-source-credit:hover {
+  color: rgba(255, 253, 248, 0.62);
+}
+
+.music-card-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: rgba(255, 253, 248, 0.07);
+}
+
+.music-card-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: var(--gold);
+  border-radius: 0 1px 1px 0;
+  transition: width 0.5s linear;
 }
 
 .music-track-num {
@@ -1521,19 +1600,20 @@ h1 {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  color: rgba(255, 253, 248, 0.85);
-  font-size: 0.82rem;
-  font-style: italic;
+  color: rgba(255, 253, 248, 0.82);
+  font-size: 0.8rem;
+  font-weight: 500;
   line-height: 1.2;
 }
 
 .music-track-sub {
   display: block;
-  margin-top: 2px;
-  color: rgba(255, 253, 248, 0.45);
-  font-size: 0.76rem;
-  font-style: italic;
-  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: rgba(255, 253, 248, 0.35);
+  font-size: 0.68rem;
+  font-weight: 450;
 }
 
 .now-travel {

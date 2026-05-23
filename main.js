@@ -79,13 +79,20 @@ if (!isTouchDevice) {
     audioEl.pause(); audioEl.src = ""; activeId = null;
     playerBar.classList.remove("is-visible");
     widget.querySelectorAll(".mpb-play-btn").forEach(function (b) { b.textContent = "▶"; b.classList.remove("active"); });
+    var cardFill = widget.parentNode.querySelector("[data-card-progress]");
+    if (cardFill) cardFill.style.width = "0%";
   });
   audioEl.addEventListener("timeupdate", function () {
-    if (audioEl.duration)
-      playerBar.querySelector(".mpb-fill").style.width = (audioEl.currentTime / audioEl.duration * 100) + "%";
+    if (!audioEl.duration) return;
+    var pct = (audioEl.currentTime / audioEl.duration * 100) + "%";
+    playerBar.querySelector(".mpb-fill").style.width = pct;
+    var cardFill = widget.parentNode.querySelector("[data-card-progress]");
+    if (cardFill) cardFill.style.width = pct;
   });
   audioEl.addEventListener("ended", function () {
     activeId = null; playerBar.classList.remove("is-visible");
+    var cardFill = widget.parentNode.querySelector("[data-card-progress]");
+    if (cardFill) cardFill.style.width = "0%";
   });
 
   function playSong(id, name, fallback) {
@@ -121,7 +128,7 @@ if (!isTouchDevice) {
   fetch(NETEASE_API + "/user/record?uid=" + NETEASE_UID + "&type=1&cookie=" + encodeURIComponent(NETEASE_COOKIE))
     .then(function (r) { return r.json(); })
     .then(function (data) {
-      var tracks = (data.weekData || []).slice(0, 3);
+      var tracks = (data.weekData || []).slice(0, 5);
       if (!tracks.length) return;
 
       var top    = tracks[0].song;
@@ -161,11 +168,13 @@ if (!isTouchDevice) {
       if (listEl) {
         listEl.innerHTML = tracks.slice(1).map(function (item, i) {
           var s = item.song;
-          var num = "0" + (i + 2);
+          var num = (i + 2) < 10 ? "0" + (i + 2) : String(i + 2);
           var artist = s.ar.map(function (a) { return a.name; }).join(" / ");
+          var thumb = s.al && s.al.picUrl ? s.al.picUrl + "?param=80y80" : "";
           return '<li>'
             + '<span class="music-track-num">' + num + "</span>"
-            + "<span>"
+            + (thumb ? '<img class="music-track-thumb" src="' + thumb + '" alt="" loading="lazy">' : '<span class="music-track-thumb"></span>')
+            + "<span class=\"music-track-info\">"
             + '<span class="music-track-name">' + s.name + "</span>"
             + '<span class="music-track-sub">' + artist + "</span>"
             + "</span>"
