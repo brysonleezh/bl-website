@@ -191,23 +191,23 @@ if (!isTouchDevice) {
     .catch(function () {});
 })();
 
-// NYT Top Stories (Sports) + Most Popular (7-day views)
+// News: ESPN Sports (left) + NYT Most Popular 7-day (right)
 (function () {
-  var articlesEl = document.querySelector("[data-nyt-articles]");
-  var popularEl  = document.querySelector("[data-nyt-popular]");
-  if (!articlesEl && !popularEl) return;
+  var sportsEl = document.querySelector("[data-nyt-articles]");
+  var popularEl = document.querySelector("[data-nyt-popular]");
+  if (!sportsEl && !popularEl) return;
 
   var NYT_KEY = "IJy4niBYdnqyR0wlvMYb74T1UaA0VqptOpxOJ6wzetQ2uCA0";
 
   function renderList(el, items) {
     el.innerHTML = "";
     items.slice(0, 3).forEach(function (item) {
-      var li  = document.createElement("li");
+      var li = document.createElement("li");
       li.className = "reading-item";
 
       var tag = document.createElement("span");
       tag.className = "reading-item-tag";
-      tag.textContent = item.subsection || item.section || "NYT";
+      tag.textContent = item.tag;
 
       var link = document.createElement("a");
       link.className = "reading-item-title";
@@ -222,17 +222,37 @@ if (!isTouchDevice) {
     });
   }
 
-  if (articlesEl) {
-    fetch("https://api.nytimes.com/svc/mostpopular/v2/viewed/1.json?api-key=" + NYT_KEY)
-      .then(function (r) { return r.json(); })
-      .then(function (d) { renderList(articlesEl, d.results || []); })
-      .catch(function () {});
+  // ESPN: one headline each from NBA, Premier League, F1
+  if (sportsEl) {
+    var espnSources = [
+      { tag: "NBA",            url: "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/news?limit=1" },
+      { tag: "Premier League", url: "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/news?limit=1" },
+      { tag: "F1",             url: "https://site.api.espn.com/apis/site/v2/sports/racing/f1/news?limit=1" }
+    ];
+    Promise.all(espnSources.map(function (s) {
+      return fetch(s.url)
+        .then(function (r) { return r.json(); })
+        .then(function (d) {
+          var a = (d.articles || [])[0];
+          if (!a) return null;
+          return { tag: s.tag, title: a.headline, url: a.links.web.href };
+        })
+        .catch(function () { return null; });
+    })).then(function (results) {
+      renderList(sportsEl, results.filter(Boolean));
+    });
   }
 
+  // NYT Most Popular — 7-day views
   if (popularEl) {
     fetch("https://api.nytimes.com/svc/mostpopular/v2/viewed/7.json?api-key=" + NYT_KEY)
       .then(function (r) { return r.json(); })
-      .then(function (d) { renderList(popularEl, d.results || []); })
+      .then(function (d) {
+        var items = (d.results || []).slice(0, 3).map(function (a) {
+          return { tag: a.section || "NYT", title: a.title, url: a.url };
+        });
+        renderList(popularEl, items);
+      })
       .catch(function () {});
   }
 })();
