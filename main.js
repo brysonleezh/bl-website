@@ -393,3 +393,194 @@ if (!isTouchDevice) {
   setTimeout(function () { type(0); }, 300);
 })();
 
+// Bowen's Picks -- interactive sports take section
+(function () {
+  var arena = document.querySelector("[data-picks-arena]");
+  if (!arena) return;
+
+  var takes = [
+    {
+      sport: "NBA",
+      sportAttr: "nba",
+      statement: "Nikola Jokic is the most complete offensive player in NBA history. The traditional box score still can't fully capture what he does.",
+      reasoning: "Look past the 24.5 points. His 65.6% True Shooting is top 1% for any high-usage player in league history. His 2021-23 three-year VORP is the highest recorded stretch ever. A center averaging 10+ assists per game while leading the league in efficiency isn't just rare -- it's never happened before.",
+      stats: [
+        { value: "65.6%", label: "True Shooting", context: "2022-23 season" },
+        { value: "9.2",   label: "VORP",          context: "league best" },
+        { value: "10.6",  label: "AST / game",    context: "from center position" }
+      ]
+    },
+    {
+      sport: "Premier League",
+      sportAttr: "pl",
+      statement: "Erling Haaland's 2022-23 Premier League season broke records that the xG model said weren't achievable.",
+      reasoning: "His expected goals (xG) for the season was 26.5. He scored 36. That's a +9.5 overperformance -- converting at 26.4% per shot when the elite striker average sits at 10-14%. The model built to predict goals literally couldn't predict him. That's not a hot streak. That's a statistical anomaly.",
+      stats: [
+        { value: "36",   label: "Goals",          context: "35 PL games" },
+        { value: "26.5", label: "xG (expected)",   context: "2022-23" },
+        { value: "+9.5", label: "Overperformance", context: "goals above model" }
+      ]
+    },
+    {
+      sport: "Formula 1",
+      sportAttr: "f1",
+      statement: "Verstappen's 2023 season is the most statistically dominant single season in the history of modern motorsport.",
+      reasoning: "19 wins from 22 races -- an 86.4% win rate. Schumacher's legendary 2004 was 72.2%. Senna's 1988 was 50%. In a sport with 20 cars and variable conditions, winning 86% of races isn't just dominant -- it's historically unprecedented in the turbo-hybrid era. The gap to P2 at season end was 290 points.",
+      stats: [
+        { value: "86.4%", label: "Win rate",   context: "19 from 22 races" },
+        { value: "290",   label: "Pt gap",     context: "to P2 at season end" },
+        { value: "72.2%", label: "Schumacher", context: "2004 comparison" }
+      ]
+    }
+  ];
+
+  var state = { idx: 0, voted: false };
+
+  function el(tag, cls) {
+    var node = document.createElement(tag);
+    if (cls) node.className = cls;
+    return node;
+  }
+
+  function renderTake() {
+    arena.innerHTML = "";
+    var take = takes[state.idx];
+
+    var prog = el("div", "picks-progress");
+    var n = state.idx + 1;
+    prog.textContent = (n < 10 ? "0" + n : n) + " / 0" + takes.length;
+    arena.appendChild(prog);
+
+    var badge = el("span", "picks-sport-badge");
+    badge.textContent = take.sport;
+    badge.dataset.sport = take.sportAttr;
+    arena.appendChild(badge);
+
+    var stmt = el("p", "picks-take");
+    stmt.textContent = take.statement;
+    arena.appendChild(stmt);
+
+    var prompt = el("p", "picks-vote-prompt");
+    prompt.textContent = "Agree or disagree?";
+    arena.appendChild(prompt);
+
+    var voteRow = el("div", "picks-vote-row");
+    ["Agree", "Disagree"].forEach(function (label) {
+      var btn = el("button", "picks-vote-btn");
+      btn.textContent = label;
+      btn.dataset.choice = label.toLowerCase();
+      btn.addEventListener("click", function () {
+        if (state.voted) return;
+        handleVote(label.toLowerCase());
+      });
+      voteRow.appendChild(btn);
+    });
+    arena.appendChild(voteRow);
+  }
+
+  function handleVote(choice) {
+    state.voted = true;
+
+    arena.querySelectorAll(".picks-vote-btn").forEach(function (btn) {
+      btn.disabled = true;
+      if (btn.dataset.choice === choice) {
+        btn.classList.add("voted-" + choice);
+      } else {
+        btn.classList.add("vote-other");
+      }
+    });
+
+    arena.appendChild(buildReveal());
+  }
+
+  function buildReveal() {
+    var take = takes[state.idx];
+    var reveal = el("div", "picks-reveal");
+
+    var reasonLabel = el("p", "picks-reason-label");
+    reasonLabel.textContent = "Here's why I think this:";
+    reveal.appendChild(reasonLabel);
+
+    var reason = el("p", "picks-reasoning");
+    reason.textContent = take.reasoning;
+    reveal.appendChild(reason);
+
+    var statsRow = el("div", "picks-stats-row");
+    take.stats.forEach(function (s) {
+      var chip = el("div", "picks-stat-chip");
+      var val = el("span", "stat-chip-value");
+      val.textContent = s.value;
+      var lbl = el("span", "stat-chip-label");
+      lbl.textContent = s.label;
+      var ctx = el("span", "stat-chip-context");
+      ctx.textContent = s.context;
+      chip.appendChild(val);
+      chip.appendChild(lbl);
+      chip.appendChild(ctx);
+      statsRow.appendChild(chip);
+    });
+    reveal.appendChild(statsRow);
+
+    var isLast = state.idx === takes.length - 1;
+    var navBtn = el("button", "picks-nav-btn");
+    navBtn.textContent = isLast ? "See Summary →" : "Next Take →";
+    navBtn.addEventListener("click", function () {
+      if (isLast) {
+        showEnd();
+      } else {
+        state.idx++;
+        state.voted = false;
+        renderTake();
+      }
+    });
+    reveal.appendChild(navBtn);
+
+    return reveal;
+  }
+
+  function showEnd() {
+    arena.innerHTML = "";
+    var end = el("div", "picks-end");
+
+    var h = el("h3", "picks-end-heading");
+    h.textContent = "That's how I read the data.";
+    end.appendChild(h);
+
+    var sub = el("p", "picks-end-sub");
+    sub.textContent = "These are the questions I build tools around. If this kind of analysis interests you, here's where I apply it:";
+    end.appendChild(sub);
+
+    var links = el("div", "picks-end-links");
+
+    var link1 = document.createElement("a");
+    link1.href = "http://draftshoot.duckdns.org:8501/";
+    link1.target = "_blank";
+    link1.rel = "noopener noreferrer";
+    link1.className = "picks-cta-btn";
+    link1.textContent = "Draft Shooting Portal";
+    links.appendChild(link1);
+
+    var link2 = document.createElement("a");
+    link2.href = "https://bowenlizh.shinyapps.io/04_pd_analyst_dashboard/";
+    link2.target = "_blank";
+    link2.rel = "noopener noreferrer";
+    link2.className = "picks-cta-secondary";
+    link2.textContent = "Player Dev Dashboard →";
+    links.appendChild(link2);
+
+    end.appendChild(links);
+
+    var replay = el("button", "picks-replay");
+    replay.textContent = "Read again";
+    replay.addEventListener("click", function () {
+      state = { idx: 0, voted: false };
+      renderTake();
+    });
+    end.appendChild(replay);
+
+    arena.appendChild(end);
+  }
+
+  renderTake();
+})();
+
