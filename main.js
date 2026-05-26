@@ -590,3 +590,27 @@ if (!isTouchDevice) {
   renderTake();
 })();
 
+// Scroll cue hide + hero progressive dim
+(function () {
+  var scrollCue = document.querySelector(".scroll-cue");
+  var notesGrid = document.querySelector(".notes-grid");
+  var heroDim   = document.querySelector(".hero-dim");
+
+  var ticking = false;
+  window.addEventListener("scroll", function () {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(function () {
+      var y = window.scrollY;
+      if (scrollCue) scrollCue.classList.toggle("is-hidden", y > 60);
+      if (heroDim && notesGrid) {
+        var rect = notesGrid.getBoundingClientRect();
+        var coverZone = window.innerHeight * 0.6;
+        var progress = Math.max(0, Math.min(1, (coverZone - rect.top) / coverZone));
+        heroDim.style.opacity = progress;
+      }
+      ticking = false;
+    });
+  }, { passive: true });
+})();
+
