@@ -128,7 +128,7 @@ if (!isTouchDevice) {
   fetch(NETEASE_API + "/user/record?uid=" + NETEASE_UID + "&type=1&cookie=" + encodeURIComponent(NETEASE_COOKIE))
     .then(function (r) { return r.json(); })
     .then(function (data) {
-      var tracks = (data.weekData || []).slice(0, 5);
+      var tracks = (data.weekData || []).slice(0, 7);
       if (!tracks.length) return;
 
       var top    = tracks[0].song;
@@ -191,64 +191,50 @@ if (!isTouchDevice) {
     .catch(function () {});
 })();
 
-// The Guardian Sport — dual-proxy with 4 s timeout
+// NYT Top Stories (Sports) + Most Popular (7-day views)
 (function () {
-  var grid = document.querySelector("[data-reading-grid]");
-  if (!grid) return;
+  var articlesEl = document.querySelector("[data-nyt-articles]");
+  var popularEl  = document.querySelector("[data-nyt-popular]");
+  if (!articlesEl && !popularEl) return;
 
-  var RSS = "https://www.theguardian.com/sport/rss";
-  var done = false;
+  var NYT_KEY = "IJy4niBYdnqyR0wlvMYb74T1UaA0VqptOpxOJ6wzetQ2uCA0";
 
-  function render(xml) {
-    if (done) return;
-    done = true;
-    var doc = new DOMParser().parseFromString(xml, "text/xml");
-    var items = Array.from(doc.querySelectorAll("item")).slice(0, 3);
-    if (!items.length) { grid.innerHTML = ""; return; }
+  function renderList(el, items) {
+    el.innerHTML = "";
+    items.slice(0, 3).forEach(function (item) {
+      var li  = document.createElement("li");
+      li.className = "reading-item";
 
-    grid.innerHTML = items.map(function (item) {
-      var title   = (item.querySelector("title")    || {}).textContent || "";
-      var href    = (item.querySelector("link")     || {}).textContent || "";
-      if (!href)   href = (item.querySelector("guid") || {}).textContent || "#";
-      var section = (item.querySelector("category") || {}).textContent || "Sport";
-      // Pick the largest media:content by width attribute
-      var mediaAll = Array.from(item.getElementsByTagNameNS("http://search.yahoo.com/mrss/", "content"));
-      if (!mediaAll.length) mediaAll = Array.from(item.getElementsByTagNameNS("*", "content"));
-      mediaAll.sort(function (a, b) {
-        return parseInt(b.getAttribute("width") || "0", 10) - parseInt(a.getAttribute("width") || "0", 10);
-      });
-      var imgUrl = mediaAll.length ? (mediaAll[0].getAttribute("url") || "") : "";
+      var tag = document.createElement("span");
+      tag.className = "reading-item-tag";
+      tag.textContent = item.subsection || item.section || "NYT";
 
-      return '<a class="reading-article" href="' + href + '" target="_blank" rel="noopener noreferrer">'
-        + (imgUrl ? '<img class="reading-article-img" src="' + imgUrl + '" alt="" loading="lazy">' : "")
-        + '<span class="reading-section">' + section + "</span>"
-        + '<span class="reading-article-title">' + title + "</span>"
-        + "</a>";
-    }).join("");
+      var link = document.createElement("a");
+      link.className = "reading-item-title";
+      link.href = item.url;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.textContent = item.title;
+
+      li.appendChild(tag);
+      li.appendChild(link);
+      el.appendChild(li);
+    });
   }
 
-  // Timeout — clear loading state after 4 s if nothing came back
-  var timeout = setTimeout(function () {
-    if (!done) { done = true; grid.innerHTML = ""; }
-  }, 4000);
+  if (articlesEl) {
+    fetch("https://api.nytimes.com/svc/mostpopular/v2/viewed/1.json?api-key=" + NYT_KEY)
+      .then(function (r) { return r.json(); })
+      .then(function (d) { renderList(articlesEl, d.results || []); })
+      .catch(function () {});
+  }
 
-  // Primary: codetabs proxy (raw text, confirmed working)
-  fetch("https://api.codetabs.com/v1/proxy?quest=" + RSS)
-    .then(function (r) { if (!r.ok) throw 0; return r.text(); })
-    .then(function (t) { clearTimeout(timeout); render(t); })
-    .catch(function () {
-      // Fallback 1: corsproxy.io
-      fetch("https://corsproxy.io/?" + encodeURIComponent(RSS))
-        .then(function (r) { if (!r.ok) throw 0; return r.text(); })
-        .then(function (t) { clearTimeout(timeout); render(t); })
-        .catch(function () {
-          // Fallback 2: allorigins.win (JSON-wrapped)
-          fetch("https://api.allorigins.win/get?url=" + encodeURIComponent(RSS))
-            .then(function (r) { return r.json(); })
-            .then(function (d) { clearTimeout(timeout); render(d.contents || ""); })
-            .catch(function () { if (!done) { done = true; grid.innerHTML = ""; } });
-        });
-    });
+  if (popularEl) {
+    fetch("https://api.nytimes.com/svc/mostpopular/v2/viewed/7.json?api-key=" + NYT_KEY)
+      .then(function (r) { return r.json(); })
+      .then(function (d) { renderList(popularEl, d.results || []); })
+      .catch(function () {});
+  }
 })();
 
 // Travel map — Leaflet with Seoul + Tokyo markers

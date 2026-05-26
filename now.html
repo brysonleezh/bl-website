@@ -71,6 +71,8 @@
                 <li><span class="music-track-num">03</span><span class="music-track-thumb"></span><span class="music-track-info"><span class="music-track-name">—</span></span></li>
                 <li><span class="music-track-num">04</span><span class="music-track-thumb"></span><span class="music-track-info"><span class="music-track-name">—</span></span></li>
                 <li><span class="music-track-num">05</span><span class="music-track-thumb"></span><span class="music-track-info"><span class="music-track-name">—</span></span></li>
+                <li><span class="music-track-num">06</span><span class="music-track-thumb"></span><span class="music-track-info"><span class="music-track-name">—</span></span></li>
+                <li><span class="music-track-num">07</span><span class="music-track-thumb"></span><span class="music-track-info"><span class="music-track-name">—</span></span></li>
               </ol>
               <a class="music-source-credit" href="https://music.163.com/user/home?id=19507482" target="_blank" rel="noopener noreferrer">via NetEase Cloud Music<svg viewBox="0 0 10 10" aria-hidden="true"><path d="M3 1h6v6M9 1 1 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></a>
             </div>
@@ -87,6 +89,33 @@
             <div class="playing-info">
               <span class="card-kicker">Game</span>
               <h2>Pokémon Pokopia</h2>
+              <span class="game-status-tag"><span class="game-status-dot"></span>Exploring</span>
+              <div class="game-stats-row">
+                <div class="game-stat">
+                  <span class="game-stat-value">—</span>
+                  <span class="game-stat-label">Pokédex</span>
+                </div>
+                <div class="game-stat">
+                  <span class="game-stat-value">—</span>
+                  <span class="game-stat-label">Level</span>
+                </div>
+                <div class="game-stat">
+                  <span class="game-stat-value">—</span>
+                  <span class="game-stat-label">Hours</span>
+                </div>
+              </div>
+              <div class="game-team-row">
+                <div class="game-team-slot"><img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png" alt="Charmander" /></div>
+                <div class="game-team-slot"><img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/7.png" alt="Squirtle" /></div>
+                <div class="game-team-slot"><img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/43.png" alt="Oddish" /></div>
+                <div class="game-team-slot"><img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/69.png" alt="Bellsprout" /></div>
+                <div class="game-team-slot"><img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/79.png" alt="Slowpoke" /></div>
+                <div class="game-team-slot"><img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/95.png" alt="Onix" /></div>
+              </div>
+              <div class="game-code-row">
+                <span class="game-code-label">Land code</span>
+                <span class="game-code-value">—</span>
+              </div>
               <span class="platform-badge">Check my land<svg class="arrow-svg" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 7h8M8 3.5L11.5 7 8 10.5"/></svg></span>
             </div>
           </article>
@@ -109,6 +138,19 @@
             </div>
             <span class="card-kicker">Travel</span>
             <h2>South Korea &amp; Japan</h2>
+            <div class="travel-highlights">
+              <span class="travel-highlights-label">Highlights</span>
+              <ul class="travel-highlight-list">
+                <li class="travel-highlight-item">
+                  <span class="travel-highlight-loc">Senso-ji · Tokyo</span>
+                  <span class="travel-highlight-moment">Rickshaw ride on the road.</span>
+                </li>
+                <li class="travel-highlight-item">
+                  <span class="travel-highlight-loc">Gwangjang Market · Seoul</span>
+                  <span class="travel-highlight-moment">Live octopus. Still moving on the way down.</span>
+                </li>
+              </ul>
+            </div>
             <div id="travel-map" class="travel-map-el"></div>
           </article>
 
@@ -125,42 +167,82 @@
             </div>
             <h2>1984</h2>
             <p class="book-author-line">George Orwell</p>
+            <div class="book-progress-row">
+              <div class="book-progress-bar">
+                <div class="book-progress-fill" style="width: 1.5%"></div>
+              </div>
+              <span class="book-progress-label">p. 5 / 328</span>
+            </div>
+            <div class="book-genres">
+              <span class="book-genre-tag">Dystopia</span>
+              <span class="book-genre-tag">Political</span>
+              <span class="book-genre-tag">Classic</span>
+            </div>
+            <p class="book-impression">"Still unsettling. More relevant than ever."</p>
           </article>
 
-          <!-- News / Guardian (span 3, full width) -->
+          <!-- News / NYT (span 3, full width) -->
           <article class="now-card now-reading" aria-labelledby="reading-title">
             <div class="reading-head">
               <div>
                 <span class="card-kicker">News</span>
                 <h2 id="reading-title">In the news.</h2>
               </div>
-              <span class="reading-badge">The Guardian</span>
+              <span class="reading-badge">The New York Times</span>
             </div>
-            <div class="reading-grid" data-reading-grid aria-label="The Athletic articles">
-              <p class="reading-placeholder">—</p>
+            <div class="reading-split">
+              <div class="reading-col">
+                <span class="reading-col-label">Most Read · Today</span>
+                <ul class="reading-item-list" data-nyt-articles aria-label="NYT most viewed today">
+                  <li class="reading-item"><span class="reading-item-tag">—</span><span class="reading-item-title">—</span></li>
+                  <li class="reading-item"><span class="reading-item-tag">—</span><span class="reading-item-title">—</span></li>
+                  <li class="reading-item"><span class="reading-item-tag">—</span><span class="reading-item-title">—</span></li>
+                </ul>
+              </div>
+              <div class="reading-split-divider" aria-hidden="true"></div>
+              <div class="reading-col">
+                <span class="reading-col-label">Most Read · 7 days</span>
+                <ul class="reading-item-list" data-nyt-popular aria-label="NYT most viewed articles">
+                  <li class="reading-item"><span class="reading-item-tag">—</span><span class="reading-item-title">—</span></li>
+                  <li class="reading-item"><span class="reading-item-tag">—</span><span class="reading-item-title">—</span></li>
+                  <li class="reading-item"><span class="reading-item-tag">—</span><span class="reading-item-title">—</span></li>
+                </ul>
+              </div>
             </div>
           </article>
 
           <!-- Watching (span 3) -->
           <article class="now-card now-watching">
             <span class="card-kicker">Watching</span>
-            <h2>Netflix queue.</h2>
-            <div class="watch-poster-grid" aria-label="Netflix list">
-              <div class="watch-poster">
-                <img src="assets/watching/american-manhunt.jpg" alt="American Manhunt: Osama Bin Laden" loading="lazy" />
-                <span class="watch-poster-title">American Manhunt: Osama Bin Laden</span>
+            <h2>Recently watched.</h2>
+            <div class="watch-reviews">
+              <div class="watch-review">
+                <div class="watch-review-poster">
+                  <img src="assets/watching/1917.jpg" alt="1917" loading="lazy" />
+                </div>
+                <div class="watch-review-copy">
+                  <strong class="watch-review-title">1917</strong>
+                  <p class="watch-review-take">Shot as one continuous take — the cinematography is genuinely breathtaking. Went in expecting anti-war like All Quiet on the Western Front. It isn't. Visually unforgettable, plot runs flat.</p>
+                </div>
               </div>
-              <div class="watch-poster">
-                <img src="assets/watching/pokemon-indigo.jpg" alt="Pokémon Indigo League" loading="lazy" />
-                <span class="watch-poster-title">Pokémon Indigo League</span>
+              <div class="watch-review">
+                <div class="watch-review-poster">
+                  <img src="assets/watching/american-manhunt.jpg" alt="American Manhunt: Osama Bin Laden" loading="lazy" />
+                </div>
+                <div class="watch-review-copy">
+                  <strong class="watch-review-title">American Manhunt: Osama Bin Laden</strong>
+                  <p class="watch-review-take">Episode 3 changed how I think about 9/11. A masked CIA analyst's closing words stayed with me: we spent $1 trillion on the war on terror. Bin Laden won.</p>
+                </div>
               </div>
-              <div class="watch-poster">
+            </div>
+            <div class="watch-next">
+              <span class="watch-next-label">Up next</span>
+              <div class="watch-next-item">
                 <img src="assets/watching/singles-inferno.jpg" alt="Single's Inferno" loading="lazy" />
-                <span class="watch-poster-title">Single's Inferno</span>
-              </div>
-              <div class="watch-poster">
-                <img src="assets/watching/turning-point.jpg" alt="Turning Point: The Vietnam War" loading="lazy" />
-                <span class="watch-poster-title">Turning Point: The Vietnam War</span>
+                <div class="watch-next-copy">
+                  <span class="watch-next-title">Single's Inferno</span>
+                  <span class="watch-next-badge">Korean</span>
+                </div>
               </div>
             </div>
           </article>
