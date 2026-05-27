@@ -19,6 +19,7 @@
       <nav class="nav" aria-label="Primary navigation">
         <a href="#home" class="active">Home</a>
         <a href="now.html">Now</a>
+        <a href="sports.html">Game</a>
         <!-- <a href="interests.html">Interest</a> -->
         <a href="assets/BowenLi.pdf">Resume</a>
         <a href="https://calendly.com/bowenlizh" target="_blank" rel="noopener noreferrer" class="nav-book">Book a call</a>
@@ -26,10 +27,8 @@
     </header>
 
     <main class="page">
-      <div class="hero-scene">
       <section id="home" class="home field-home" aria-labelledby="name">
         <div class="field-hero">
-          <div class="hero-dim" aria-hidden="true"></div>
           <div class="field-copy">
             <a class="hello-badge" href="mailto:bowenlizh@gmail.com">Say Hello</a>
             <p class="field-label">BOWEN LI · PORTFOLIO · LA Notes</p>
@@ -55,9 +54,6 @@
               <small>Data Analyst<svg class="arrow-svg arrow-svg-inline" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 7h8M8 3.5L11.5 7 8 10.5"/></svg>Sports Analytics</small>
             </div>
           </aside>
-        </div>
-        <div class="scroll-cue" aria-hidden="true">
-          <span>🏀</span><span>⚽️</span><span>⚾️</span><span>🏈</span>
         </div>
       </section>
 
@@ -114,7 +110,7 @@
             <h2>Too many Games</h2>
             <p>Lakers, Dodgers, F1, snowboard, Hotspur, and the next fixture on the calendar.</p>
           </div>
-          <a class="note-link" href="https://fixtur.es/en/up-to-date" target="_blank" rel="noopener noreferrer" aria-label="Open game calendar">Game calendar</a>
+          <a class="note-link" href="sports.html" aria-label="Open game calendar">Game calendar</a>
         </article>
 
         <article class="note-card note-la">
@@ -135,11 +131,55 @@
           </div>
         </article>
       </section>
-      </div><!-- end .hero-scene -->
+      <section class="sport-bar" aria-label="Sports schedule">
+        <div class="sport-bar-inner">
+          <span class="sport-bar-dec" aria-hidden="true">«</span>
+          <div class="sport-bar-icons">
 
-      <div class="section-cue" aria-hidden="true">
-        <span>🏀</span><span>⚽️</span><span>⚾️</span><span>🏈</span>
-      </div>
+            <div class="sport-item" data-sport="basketball/nba">
+              <button class="sport-btn" aria-label="NBA schedule"><span class="sport-emoji">🏀</span></button>
+              <div class="sport-popup"><strong class="sport-popup-title">NBA Playoffs</strong><ul class="sport-popup-games" data-games><li class="sport-popup-loading">···</li></ul><span class="sport-popup-cta">Full schedule →</span></div>
+            </div>
+
+            <div class="sport-item" data-sport="racing/f1">
+              <button class="sport-btn" aria-label="F1 schedule"><span class="sport-emoji">🏎️</span></button>
+              <div class="sport-popup"><strong class="sport-popup-title">Formula 1</strong><ul class="sport-popup-games" data-games><li class="sport-popup-loading">···</li></ul><span class="sport-popup-cta">Full schedule →</span></div>
+            </div>
+
+            <div class="sport-item" data-sport="tennis">
+              <button class="sport-btn" aria-label="Tennis schedule"><span class="sport-emoji">🎾</span></button>
+              <div class="sport-popup"><strong class="sport-popup-title">Wang Xinyu · WTA</strong><ul class="sport-popup-games" data-games><li class="sport-popup-loading">···</li></ul><span class="sport-popup-cta">Full schedule →</span></div>
+            </div>
+
+            <div class="sport-item" data-sport="soccer/fifa.world">
+              <button class="sport-btn" aria-label="World Cup schedule"><span class="sport-emoji">🏆</span></button>
+              <div class="sport-popup"><strong class="sport-popup-title">World Cup 2026</strong><ul class="sport-popup-games" data-games><li class="sport-popup-loading">···</li></ul><span class="sport-popup-cta">Full schedule →</span></div>
+            </div>
+
+            <div class="sport-item" data-sport="soccer/eng.1">
+              <button class="sport-btn" aria-label="Premier League schedule"><span class="sport-emoji">⚽️</span></button>
+              <div class="sport-popup"><strong class="sport-popup-title">Premier League</strong><ul class="sport-popup-games" data-games><li class="sport-popup-loading">···</li></ul><span class="sport-popup-cta">Full schedule →</span></div>
+            </div>
+
+            <div class="sport-item" data-sport="baseball/mlb">
+              <button class="sport-btn" aria-label="MLB schedule"><span class="sport-emoji">⚾️</span></button>
+              <div class="sport-popup"><strong class="sport-popup-title">MLB · Dodgers</strong><ul class="sport-popup-games" data-games><li class="sport-popup-loading">···</li></ul><span class="sport-popup-cta">Full schedule →</span></div>
+            </div>
+
+            <div class="sport-item" data-sport="hockey/nhl">
+              <button class="sport-btn" aria-label="NHL schedule"><span class="sport-emoji">🏒</span></button>
+              <div class="sport-popup"><strong class="sport-popup-title">NHL · Kings</strong><ul class="sport-popup-games" data-games><li class="sport-popup-loading">···</li></ul><span class="sport-popup-cta">Full schedule →</span></div>
+            </div>
+
+            <div class="sport-item" data-sport="football/college-football">
+              <button class="sport-btn" aria-label="NCAA schedule"><span class="sport-emoji">🏈</span></button>
+              <div class="sport-popup"><strong class="sport-popup-title">NCAA Football</strong><ul class="sport-popup-games" data-games><li class="sport-popup-loading">···</li></ul><span class="sport-popup-cta">Full schedule →</span></div>
+            </div>
+
+          </div>
+          <span class="sport-bar-dec" aria-hidden="true">»</span>
+        </div>
+      </section>
 
       <section class="picks-section" aria-labelledby="picks-title">
         <div class="picks-intro">

@@ -590,27 +590,841 @@ if (!isTouchDevice) {
   renderTake();
 })();
 
-// Scroll cue hide + hero progressive dim
+// Sport bar — hover popup with ESPN schedule preview
 (function () {
-  var scrollCue = document.querySelector(".scroll-cue");
-  var notesGrid = document.querySelector(".notes-grid");
-  var heroDim   = document.querySelector(".hero-dim");
+  var items = document.querySelectorAll(".sport-item[data-sport]");
+  if (!items.length) return;
 
-  var ticking = false;
-  window.addEventListener("scroll", function () {
-    if (ticking) return;
-    ticking = true;
-    requestAnimationFrame(function () {
-      var y = window.scrollY;
-      if (scrollCue) scrollCue.classList.toggle("is-hidden", y > 60);
-      if (heroDim && notesGrid) {
-        var rect = notesGrid.getBoundingClientRect();
-        var coverZone = window.innerHeight * 0.6;
-        var progress = Math.max(0, Math.min(1, (coverZone - rect.top) / coverZone));
-        heroDim.style.opacity = progress;
+  var ESPN = "https://site.api.espn.com/apis/site/v2/sports/";
+  var DOWS_SHORT = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+
+  function escH(s) { return String(s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+  function fmtPopupDate(iso) {
+    var d = new Date(iso);
+    return DOWS_SHORT[d.getDay()] + " " + (d.getMonth() + 1) + "/" + d.getDate();
+  }
+
+  function fmtPopupTime(iso) {
+    var d = new Date(iso);
+    var h = d.getHours(), m = d.getMinutes(), ampm = h >= 12 ? "p" : "a";
+    h = h % 12 || 12;
+    return h + (m ? ":" + (m < 10 ? "0" + m : m) : "") + ampm;
+  }
+
+  function renderGames(listEl, events) {
+    if (!events.length) {
+      listEl.innerHTML = '<li class="sport-popup-none">No upcoming games found</li>';
+      return;
+    }
+    var upcoming = events.filter(function (ev) {
+      var state = (ev.competitions[0] && ev.competitions[0].status && ev.competitions[0].status.type.state) || "pre";
+      return state === "pre" || state === "in";
+    }).slice(0, 4);
+
+    if (!upcoming.length) {
+      listEl.innerHTML = '<li class="sport-popup-none">No upcoming games</li>';
+      return;
+    }
+
+    listEl.innerHTML = upcoming.map(function (ev) {
+      var comp = ev.competitions[0] || {};
+      var state = (comp.status && comp.status.type.state) || "pre";
+      var comps = comp.competitors || [];
+      var away = null, home = null;
+      for (var i = 0; i < comps.length; i++) {
+        if (comps[i].homeAway === "away") away = comps[i];
+        else home = comps[i];
       }
-      ticking = false;
+      if (!away) away = comps[0] || {};
+      if (!home) home = comps[1] || {};
+      var aAbbr = (away.team && (away.team.abbreviation || away.team.shortDisplayName)) || "?";
+      var hAbbr = (home.team && (home.team.abbreviation || home.team.shortDisplayName)) || "?";
+
+      if (state === "in") {
+        var aScore = away.score || "0", hScore = home.score || "0";
+        var period = (comp.status && comp.status.type.shortDetail) || "Live";
+        return "<li class='sport-popup-game'>" +
+          "<span class='popup-game-live-row'><span class='game-live'>LIVE</span><span class='popup-game-period'>" + escH(period) + "</span></span>" +
+          "<span class='popup-game-matchup'>" + escH(aAbbr) + " <span class='popup-score'>" + aScore + "–" + hScore + "</span> " + escH(hAbbr) + "</span>" +
+        "</li>";
+      }
+
+      var dateStr = fmtPopupDate(ev.date);
+      var timeStr = fmtPopupTime(ev.date);
+      return "<li class='sport-popup-game'>" +
+        "<span class='popup-game-date'><span class='popup-date-dow'>" + dateStr.split(" ")[0] + "</span><span class='popup-date-md'>" + dateStr.split(" ")[1] + "</span></span>" +
+        "<span class='popup-game-matchup'>" + escH(aAbbr) + " <span class='popup-vs'>@</span> " + escH(hAbbr) + "</span>" +
+        "<span class='popup-game-time'>" + timeStr + "</span>" +
+      "</li>";
+    }).join("");
+  }
+
+  [].forEach.call(items, function (item) {
+    var sport = item.dataset.sport;
+    var listEl = item.querySelector("[data-games]");
+    var ctaEl  = item.querySelector(".sport-popup-cta");
+    var fetched = false;
+
+    // Wire CTA to sports.html
+    if (ctaEl) {
+      ctaEl.addEventListener("click", function () {
+        window.location.href = "sports.html?sport=" + encodeURIComponent(sport);
+      });
+    }
+
+    item.addEventListener("mouseenter", function () {
+      if (fetched || !listEl) return;
+      fetched = true;
+
+      if (sport === "tennis") {
+        listEl.innerHTML = "<li class='sport-popup-game'>" +
+          "<span class='popup-game-date'><span class='popup-date-dow'>Now</span><span class='popup-date-md'></span></span>" +
+          "<span class='popup-game-matchup'>Roland Garros</span>" +
+          "<span class='popup-game-time'>Clay</span>" +
+        "</li><li class='sport-popup-game'>" +
+          "<span class='popup-game-date'><span class='popup-date-dow'>Jun</span><span class='popup-date-md'>29</span></span>" +
+          "<span class='popup-game-matchup'>Wimbledon</span>" +
+          "<span class='popup-game-time'>Grass</span>" +
+        "</li>";
+        return;
+      }
+
+      fetch(ESPN + sport + "/scoreboard?limit=10")
+        .then(function (r) { return r.json(); })
+        .then(function (d) { renderGames(listEl, d.events || []); })
+        .catch(function () {
+          listEl.innerHTML = "<li class='sport-popup-none'>—</li>";
+        });
     });
-  }, { passive: true });
+
+    item.querySelector(".sport-btn").addEventListener("click", function () {
+      document.dispatchEvent(new CustomEvent("sport-tab-open", { detail: { sport: sport } }));
+    });
+  });
+})();
+
+// Navigate to sports.html when a sport emoji is clicked on any page
+document.addEventListener("sport-tab-open", function (e) {
+  window.location.href = "sports.html?sport=" + encodeURIComponent(e.detail.sport);
+});
+
+// Sports calendar page
+(function () {
+  if (!document.querySelector(".sports-page")) return;
+
+  var ESPN_BASE = "https://site.api.espn.com/apis/site/v2/sports/";
+
+  var WANG_XINYU = [
+    { id:"ao2026",    name:"Australian Open",   venue:"Melbourne Park, Melbourne",       start:"2026-01-19", end:"2026-02-01", surface:"Hard",  tier:"Grand Slam", prize:"A$86.5M" },
+    { id:"iw2026",    name:"Indian Wells Open", venue:"Indian Wells Tennis Garden, CA",  start:"2026-03-09", end:"2026-03-22", surface:"Hard",  tier:"WTA 1000",   prize:"" },
+    { id:"miami2026", name:"Miami Open",        venue:"Hard Rock Stadium, Miami",        start:"2026-03-24", end:"2026-04-05", surface:"Hard",  tier:"WTA 1000",   prize:"" },
+    { id:"rg2026",    name:"Roland Garros",     venue:"Stade Roland Garros, Paris",      start:"2026-05-25", end:"2026-06-07", surface:"Clay",  tier:"Grand Slam", prize:"€49.6M" },
+    { id:"wim2026",   name:"Wimbledon",         venue:"All England Club, London",        start:"2026-06-29", end:"2026-07-12", surface:"Grass", tier:"Grand Slam", prize:"£50M" },
+    { id:"uso2026",   name:"US Open",           venue:"USTA Billie Jean King NTC, NYC",  start:"2026-08-31", end:"2026-09-13", surface:"Hard",  tier:"Grand Slam", prize:"$65M" },
+    { id:"wtaf2026",  name:"WTA Finals",        venue:"Shenzhen Bay Sports Center",      start:"2026-11-02", end:"2026-11-09", surface:"Hard",  tier:"WTA Finals", prize:"" },
+  ];
+
+  // Priority order: most-watched first
+  var SPORTS = [
+    { key:"nba",     label:"NBA",     full:"NBA",              emoji:"🏀",  color:"#c9243f", type:"scoreboard", league:"basketball/nba" },
+    { key:"f1",      label:"F1",      full:"Formula 1",        emoji:"🏎️", color:"#00594f", type:"scoreboard", league:"racing/f1" },
+    { key:"tennis",  label:"Tennis",  full:"Wang Xinyu",       emoji:"🎾",  color:"#c8860a", type:"static" },
+    { key:"wc",      label:"WC",      full:"World Cup",        emoji:"🏆",  color:"#1a56db", type:"scoreboard", league:"soccer/fifa.world" },
+    { key:"pl",      label:"PL",      full:"Premier League",   emoji:"⚽️", color:"#3d195b", type:"scoreboard", league:"soccer/eng.1" },
+    { key:"ucl",     label:"UCL",     full:"Champions League", emoji:"⚽️", color:"#1d47ba", type:"scoreboard", league:"soccer/uefa.champions" },
+    { key:"dodgers", label:"Dodgers", full:"LA Dodgers",       emoji:"⚾️", color:"#005a9c", type:"team",       url:ESPN_BASE + "baseball/mlb/teams/19/schedule" },
+    { key:"kings",   label:"Kings",   full:"LA Kings",         emoji:"🏒",  color:"#111a3c", type:"team",       url:ESPN_BASE + "hockey/nhl/teams/26/schedule" },
+    { key:"ncaa",    label:"NCAA",    full:"NCAA Football",    emoji:"🏈",  color:"#bf5700", type:"scoreboard", league:"football/college-football" },
+  ];
+
+  // ESPN headshots only for players whose IDs are confirmed
+  var ESPN_HS = "https://a.espncdn.com/combiner/i?img=/i/headshots/";
+  var FOLLOWING = [
+    {
+      key:"alonso", name:"Fernando Alonso", sport:"Formula 1", emoji:"🏎️", bg:"#00594f", fg:"#a6e22e",
+      featured:true, badge:"2026 Season", logo:"https://a.espncdn.com/combiner/i?img=/i/teamlogos/racing/500/astm.png",
+      facts:["2× World Champion","Aston Martin AMR25","El Plan 33"],
+      note:"Watched him dominate in Ferrari red. Still chasing that 3rd title at Aston Martin.",
+      players:[
+        { name:"Alonso #14", photo:"assets/following/alonso.jpg" },
+        { name:"Stroll #18", photo:"" },
+      ],
+    },
+    {
+      key:"lakers", name:"LA Lakers", sport:"NBA", emoji:"🏀", bg:"#552583", fg:"#FDB927",
+      featured:true, badge:"Playoffs 🔥", logo:"https://a.espncdn.com/combiner/i?img=/i/teamlogos/nba/500/lal.png",
+      facts:["17× NBA Champion","Kobe → LeBron era","Crypto.com Arena"],
+      note:"Been watching since Kobe's 2010 chip. Still bleed purple and gold.",
+      players:[
+        { name:"LeBron James",  photo: ESPN_HS + "nba/players/full/1966.png&h=160&w=160" },
+        { name:"Anthony Davis", photo: ESPN_HS + "nba/players/full/3202.png&h=160&w=160" },
+        { name:"A. Reaves",     photo: ESPN_HS + "nba/players/full/4066457.png&h=160&w=160" },
+      ],
+    },
+    {
+      key:"clippers", name:"LA Clippers", sport:"NBA", emoji:"🏀", bg:"#c8102e", fg:"#ffffff",
+      featured:true, badge:"Playoffs 🔥", logo:"https://a.espncdn.com/combiner/i?img=/i/teamlogos/nba/500/lac.png",
+      facts:["James Harden era","Kawhi Leonard","New Intuit Dome"],
+      note:"Started watching for James Harden. Intuit Dome is a great arena.",
+      players:[
+        { name:"James Harden",  photo: ESPN_HS + "nba/players/full/3992.png&h=160&w=160" },
+        { name:"Kawhi Leonard", photo: ESPN_HS + "nba/players/full/6450.png&h=160&w=160" },
+        { name:"N. Powell",     photo:"" },
+      ],
+    },
+    {
+      key:"xinyu", name:"Wang Xinyu", sport:"WTA Tennis", emoji:"🎾", bg:"#c8860a", fg:"#fff4d6",
+      featured:true, badge:"Roland Garros 🌸", logo:"",
+      facts:["China 🇨🇳","Right-handed","WTA Top 50"],
+      note:"Following her rise through the WTA ranks. China's most exciting player.",
+      players:[
+        { name:"王欣瑜", photo:"assets/following/xinyu.jpg" },
+      ],
+    },
+    {
+      key:"wc", name:"World Cup 2026", sport:"Soccer", emoji:"🏆", bg:"#1a56db", fg:"#ffffff",
+      banner:true, badge:"Jun 11 · USA", logo:"",
+      facts:["48 Teams · USA/Canada/Mexico","June 11 – July 19, 2026","First NA since 1994"],
+      note:"First World Cup on US soil since 1994. Can't miss a single match.",
+      players:[
+        { name:"Mbappé",       photo:"https://img.a.transfermarkt.technology/portrait/medium/342229.jpg" },
+        { name:"Haaland",      photo:"https://img.a.transfermarkt.technology/portrait/medium/418560.jpg" },
+        { name:"Vinicius Jr.", photo:"https://img.a.transfermarkt.technology/portrait/medium/371998.jpg" },
+      ],
+    },
+    {
+      key:"dodgers", name:"LA Dodgers", sport:"MLB", emoji:"⚾️", bg:"#005a9c", fg:"#ef3e42",
+      logo:"https://a.espncdn.com/combiner/i?img=/i/teamlogos/mlb/500/lad.png",
+      facts:["2020 & 2024 Champions","Shohei Ohtani","Dodger Stadium"],
+      note:"Yamamoto's arm is unreal. Back-to-back champions — this team is special.",
+      players:[
+        { name:"Shohei Ohtani", photo:"https://img.mlbstatic.com/mlb-photos/image/upload/d_people:generic:headshot:67:current.png/w_213,q_auto:best/v1/people/660271/headshot/67/current" },
+        { name:"Y. Yamamoto",   photo:"https://img.mlbstatic.com/mlb-photos/image/upload/d_people:generic:headshot:67:current.png/w_213,q_auto:best/v1/people/808967/headshot/67/current" },
+        { name:"F. Freeman",    photo:"https://img.mlbstatic.com/mlb-photos/image/upload/d_people:generic:headshot:67:current.png/w_213,q_auto:best/v1/people/518692/headshot/67/current" },
+      ],
+    },
+    {
+      key:"spurs", name:"Tottenham Hotspur", sport:"Premier League", emoji:"⚽️", bg:"#132257", fg:"#ffffff",
+      logo:"https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/253.png",
+      facts:["Son Heung-min fan","1961 Double winners","Spurs Stadium, London"],
+      note:"Son Heung-min fan since his breakout season. 손흥민.",
+      players:[
+        { name:"Son Heung-min", photo:"https://img.a.transfermarkt.technology/portrait/medium/246669.jpg" },
+        { name:"J. Maddison",   photo:"https://img.a.transfermarkt.technology/portrait/medium/264655.jpg" },
+      ],
+    },
+    {
+      key:"kings", name:"LA Kings", sport:"NHL", emoji:"🏒", bg:"#111a3c", fg:"#a2aaad",
+      logo:"https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/la.png",
+      facts:["2× Stanley Cup","Drew Doughty","Crypto.com Arena"],
+      note:"Tune in when the playoffs heat up. LA's other arena team.",
+      players:[
+        { name:"Drew Doughty", photo:"https://assets.nhle.com/mugs/nhl/1080x1080/8474187.png" },
+        { name:"Anze Kopitar", photo:"https://assets.nhle.com/mugs/nhl/1080x1080/8471685.png" },
+      ],
+    },
+    {
+      key:"usc", name:"USC Trojans", sport:"NCAA Football", emoji:"🏈", bg:"#990000", fg:"#ffc72c",
+      logo:"https://a.espncdn.com/combiner/i?img=/i/teamlogos/ncaa/500/30.png",
+      facts:["11× Natl Champions","Fight On!","LA Memorial Coliseum"],
+      note:"Local school, big games. Fight On! Watch for the big rivalry matchups.",
+      players:[
+        { name:"Lincoln Riley HC", photo:"" },
+      ],
+    },
+  ];
+
+  var ESPN_TO_KEY = {
+    "soccer/eng.1":"pl",    "soccer/uefa.champions":"ucl",  "soccer/fifa.world":"wc",
+    "tennis":"tennis",      "basketball/nba":"nba",
+    "football/college-football":"ncaa", "football/nfl":"ncaa",
+    "hockey/nhl":"kings",   "racing/f1":"f1",               "baseball/mlb":"dodgers",
+  };
+
+  var today      = new Date();
+  var rangeStart = new Date(today.getFullYear(), today.getMonth(), 1);
+  var rangeEnd   = new Date(today.getFullYear(), today.getMonth() + 6, 0);
+
+  function fmtParam(d) { return "" + d.getFullYear() + pad2(d.getMonth() + 1) + pad2(d.getDate()); }
+  var DATE_FROM = fmtParam(rangeStart);
+  var DATE_TO   = fmtParam(rangeEnd);
+
+  var allEvents     = [];
+  var activeFilters = {};
+  SPORTS.forEach(function (s) { activeFilters[s.key] = true; });
+  var curYear      = today.getFullYear();
+  var curMonth     = today.getMonth();
+  var curView      = "month";
+  var curWeekStart = getWeekStart(today);
+  var selDay       = null;
+
+  function getWeekStart(d) {
+    var w = new Date(d);
+    w.setHours(0, 0, 0, 0);
+    w.setDate(w.getDate() - w.getDay());
+    return w;
+  }
+
+  function pad2(n)      { return n < 10 ? "0" + n : "" + n; }
+  function toDs(d)      { return d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate()); }
+  function escH(s)      { return String(s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+  function escICS(s)    { return String(s || "").replace(/\\/g,"\\\\").replace(/;/g,"\\;").replace(/,/g,"\\,").replace(/\n/g,"\\n"); }
+  function findSport(k) { for (var i = 0; i < SPORTS.length; i++) { if (SPORTS[i].key === k) return SPORTS[i]; } return null; }
+
+  var elFilters   = document.querySelector("[data-filter-bar]");
+  var elGrid      = document.querySelector("[data-cal-grid]");
+  var elLabel     = document.querySelector("[data-month-label]");
+  var elDetail    = document.querySelector("[data-cal-detail]");
+  var elDetDate   = document.querySelector("[data-detail-date]");
+  var elDetEvts   = document.querySelector("[data-detail-events]");
+  var elFollowing = document.querySelector("[data-following-grid]");
+
+  var MONTHS       = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  var MONTHS_SHORT = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  var DOWS         = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+
+  function renderFilters() {
+    if (!elFilters) return;
+    elFilters.innerHTML = SPORTS.map(function (s) {
+      var active = activeFilters[s.key];
+      return "<button class='sport-filter-chip" + (active ? "" : " inactive") + "'" +
+             " data-fkey='" + s.key + "' style='--cc:" + s.color + "'>" +
+             s.emoji + " " + escH(s.full) + "</button>";
+    }).join("");
+  }
+
+  function eventsOnDay(ds) {
+    var out = [];
+    for (var i = 0; i < allEvents.length; i++) {
+      var ev = allEvents[i];
+      if (!activeFilters[ev.sport]) continue;
+      if (ev.allDay) {
+        if ((ev.startDate || ev.date) <= ds && ds <= (ev.endDate || ev.date)) out.push(ev);
+      } else {
+        if (ev.date === ds) out.push(ev);
+      }
+    }
+    return out;
+  }
+
+  function renderCal() {
+    if (!elGrid) return;
+    if (curView === "week") {
+      elGrid.className = "cal-grid cal-grid-week";
+      renderWeekView();
+    } else {
+      elGrid.className = "cal-grid cal-grid-month";
+      renderMonthCal();
+    }
+  }
+
+  function renderMonthCal() {
+    if (elLabel) elLabel.textContent = MONTHS[curMonth] + " " + curYear;
+    var firstDow  = new Date(curYear, curMonth, 1).getDay();
+    var daysInMon = new Date(curYear, curMonth + 1, 0).getDate();
+    var todayStr  = toDs(today);
+    var html = "";
+
+    DOWS.forEach(function (d) { html += "<div class='cal-dow'>" + d + "</div>"; });
+    for (var e = 0; e < firstDow; e++) { html += "<div class='cal-day cal-day-other'></div>"; }
+
+    for (var d = 1; d <= daysInMon; d++) {
+      var ds = curYear + "-" + pad2(curMonth + 1) + "-" + pad2(d);
+      var dayEvs = eventsOnDay(ds);
+
+      var allDayEvs = [], timedEvs = [];
+      for (var i = 0; i < dayEvs.length; i++) {
+        if (dayEvs[i].allDay) allDayEvs.push(dayEvs[i]);
+        else timedEvs.push(dayEvs[i]);
+      }
+      var sorted = allDayEvs.concat(timedEvs);
+
+      var chipsHtml = "";
+      for (var i = 0; i < sorted.length && i < 2; i++) {
+        var ev = sorted[i];
+        var sp = findSport(ev.sport);
+        var col = sp ? sp.color : "#20242a";
+        if (ev.allDay) {
+          chipsHtml += "<span class='cal-chip cal-chip-allday' style='--chip-bg:" + col + "'>" + escH(ev.name.split(" ")[0]) + "</span>";
+        } else {
+          var lbl = (ev.teams || ev.name || "").substring(0, 11);
+          chipsHtml += "<span class='cal-chip' style='--chip-bg:" + col + "'>" + escH(lbl) + "</span>";
+        }
+      }
+      if (sorted.length > 2) {
+        chipsHtml += "<span class='cal-chip cal-chip-more'>+" + (sorted.length - 2) + "</span>";
+      }
+
+      var dotsHtml = "";
+      var seen = {};
+      for (var i = 0; i < dayEvs.length; i++) {
+        var k = dayEvs[i].sport;
+        if (seen[k]) continue;
+        seen[k] = true;
+        var sp = findSport(k);
+        if (sp) dotsHtml += "<span class='cal-dot' style='background:" + sp.color + "'></span>";
+      }
+
+      html += "<div class='cal-day" +
+        (ds === todayStr ? " cal-today" : "") +
+        (ds === selDay   ? " cal-selected" : "") +
+        "' data-date='" + ds + "'>" +
+        "<span class='cal-day-num'>" + d + "</span>" +
+        (chipsHtml ? "<div class='cal-chips'>" + chipsHtml + "</div>" : "") +
+        (dotsHtml  ? "<div class='cal-dots cal-dots-mobile'>" + dotsHtml + "</div>" : "") +
+        "</div>";
+    }
+
+    elGrid.innerHTML = html;
+  }
+
+  function renderWeekView() {
+    var days = [];
+    for (var i = 0; i < 7; i++) {
+      var d = new Date(curWeekStart);
+      d.setDate(curWeekStart.getDate() + i);
+      days.push(d);
+    }
+    var first = days[0], last = days[6];
+    var labelStr = MONTHS_SHORT[first.getMonth()] + " " + first.getDate() +
+                   " – " + MONTHS_SHORT[last.getMonth()] + " " + last.getDate() + ", " + last.getFullYear();
+    if (elLabel) elLabel.textContent = labelStr;
+
+    var todayStr = toDs(today);
+    var html = "";
+
+    days.forEach(function (d) {
+      var ds = toDs(d);
+      var isT = ds === todayStr;
+      html += "<div class='cal-dow" + (isT ? " cal-dow-today" : "") + "'>" +
+        DOWS[d.getDay()] + "<br><span class='cal-dow-num'>" + d.getDate() + "</span></div>";
+    });
+
+    days.forEach(function (d) {
+      var ds = toDs(d);
+      var dayEvs = eventsOnDay(ds);
+      var isT = ds === todayStr;
+      var inner = "";
+      if (!dayEvs.length) {
+        inner = "<span class='week-no-games'>—</span>";
+      } else {
+        for (var i = 0; i < dayEvs.length; i++) {
+          var ev = dayEvs[i];
+          var sp = findSport(ev.sport);
+          var col = sp ? sp.color : "#20242a";
+          if (ev.allDay) {
+            inner += "<div class='week-ev week-ev-allday' style='background:" + col + "18;border-left-color:" + col + "' data-date='" + ds + "'>" +
+              "<span class='week-ev-emoji'>" + (sp ? sp.emoji : "") + "</span>" +
+              "<span class='week-ev-title'>" + escH(ev.name) + "</span>" +
+              "<span class='week-ev-sub'>" + escH(ev.tier || "") + "</span>" +
+            "</div>";
+          } else {
+            var liveHtml = ev.status === "in" ? "<span class='game-status-live'>LIVE</span>" : "";
+            inner += "<div class='week-ev' style='border-left-color:" + col + "' data-date='" + ds + "'>" +
+              "<span class='week-ev-emoji'>" + (sp ? sp.emoji : "") + "</span>" +
+              "<span class='week-ev-title'>" + escH(ev.teams || ev.name) + "</span>" +
+              "<span class='week-ev-sub'>" + escH(ev.time || "") + (ev.broadcast ? " · " + escH(ev.broadcast) : "") + "</span>" +
+              liveHtml +
+            "</div>";
+          }
+        }
+      }
+      html += "<div class='cal-week-col" + (isT ? " cal-today" : "") + (ds === selDay ? " cal-selected" : "") + "' data-date='" + ds + "'>" + inner + "</div>";
+    });
+
+    elGrid.innerHTML = html;
+  }
+
+  function renderDetail(ds) {
+    if (!elDetail || !elDetDate || !elDetEvts) return;
+    var evs = eventsOnDay(ds);
+    var d = new Date(ds + "T12:00:00");
+    elDetDate.textContent = d.toLocaleDateString("en-US", { weekday:"long", month:"long", day:"numeric", year:"numeric" });
+    if (!evs.length) {
+      elDetEvts.innerHTML = "<p class='cal-empty-msg'>No games for your selected sports on this day.</p>";
+    } else {
+      elDetEvts.innerHTML = evs.map(buildDetailCard).join("");
+    }
+    elDetail.removeAttribute("hidden");
+    setTimeout(function () { elDetail.scrollIntoView({ behavior:"smooth", block:"nearest" }); }, 40);
+  }
+
+  function buildDetailCard(ev) {
+    var sp    = findSport(ev.sport);
+    var color = sp ? sp.color : "#20242a";
+    var emoji = sp ? sp.emoji : "";
+    var statusHtml = ev.status === "in"
+      ? "<span class='game-status-live'>LIVE</span>"
+      : (ev.status === "post" && ev.score ? "<span class='detail-score'>" + escH(ev.score) + "</span>" : "");
+
+    if (ev.allDay) {
+      var surfCls = "surface-" + (ev.surface || "").toLowerCase();
+      return "<div class='detail-card'>" +
+        "<div class='detail-sport-dot' style='background:" + color + "'>" + emoji + "</div>" +
+        "<div class='detail-card-body'>" +
+          "<span class='detail-teams'>" + escH(ev.name) + "</span>" +
+          (ev.tier ? "<span class='detail-meta'><span class='surface-badge " + surfCls + "'>" + escH(ev.surface) + "</span> " + escH(ev.tier) + "</span>" : "") +
+          (ev.prize ? "<span class='detail-meta detail-prize'>" + escH(ev.prize) + "</span>" : "") +
+          "<span class='detail-meta'>" + escH(ev.venue || "") + "</span>" +
+        "</div>" +
+        "<button class='game-add-cal' data-add-cal='" + escH(ev.id) + "'>+ Cal</button>" +
+        "</div>";
+    }
+    return "<div class='detail-card'>" +
+      "<div class='detail-sport-dot' style='background:" + color + "'>" + emoji + "</div>" +
+      "<div class='detail-card-body'>" +
+        "<span class='detail-teams'>" + escH(ev.teams || ev.name) + "</span>" +
+        "<span class='detail-meta'>" + escH(ev.time || "") + (ev.broadcast ? " · " + escH(ev.broadcast) : "") + "</span>" +
+        (ev.venue ? "<span class='detail-meta'>" + escH(ev.venue) + "</span>" : "") +
+        statusHtml +
+      "</div>" +
+      "<button class='game-add-cal' data-add-cal='" + escH(ev.id) + "'>+ Cal</button>" +
+      "</div>";
+  }
+
+  function buildAvatar(p, bg, overrideStyle) {
+    var avatarHtml = p.photo
+      ? "<img src='" + p.photo + "' class='fp-photo' alt='" + escH(p.name) + "'" +
+        " onerror=\"this.style.display='none';this.nextSibling.style.display='flex'\" loading='lazy' />" +
+        "<span class='fp-initials' style='display:none'>" + escH(p.name.charAt(0)) + "</span>"
+      : "<span class='fp-initials'>" + escH(p.name.charAt(0)) + "</span>";
+    var avStyle = overrideStyle || ("background:" + bg + "15;border-color:" + bg + "30");
+    return "<div class='fp-item'>" +
+      "<div class='fp-avatar' style='" + avStyle + "'>" + avatarHtml + "</div>" +
+      "<span class='fp-name'>" + escH(p.name) + "</span>" +
+    "</div>";
+  }
+
+  function buildFeaturedCard(f) {
+    var playersHtml = f.players.map(function(p){ return buildAvatar(p, f.bg); }).join("");
+    var logoHtml = f.logo
+      ? "<img src='" + f.logo + "' class='following-logo-img following-logo-featured' alt='' loading='lazy' />"
+      : "";
+    var badgeHtml = f.badge
+      ? "<span class='following-badge'>" + escH(f.badge) + "</span>"
+      : "";
+    return "<div class='following-card following-card-featured'>" +
+      "<div class='following-card-hd' style='background:" + f.bg + ";color:" + f.fg + "'>" +
+        "<span class='following-emoji'>" + f.emoji + "</span>" +
+        "<div>" +
+          "<span class='following-sport'>" + escH(f.sport) + "</span>" +
+          "<strong class='following-name'>" + escH(f.name) + "</strong>" +
+          badgeHtml +
+        "</div>" +
+        (logoHtml ? "<div class='following-logo-wrap'>" + logoHtml + "</div>" : "") +
+      "</div>" +
+      "<div class='following-card-bd following-card-bd-featured'>" +
+        "<p class='following-note'>" + escH(f.note) + "</p>" +
+        "<div class='fp-row'>" + playersHtml + "</div>" +
+      "</div>" +
+    "</div>";
+  }
+
+  function buildBannerCard(f) {
+    var start = new Date("2026-06-11T00:00:00");
+    var now = new Date(); now.setHours(0,0,0,0);
+    var diff = Math.ceil((start - now) / 86400000);
+    var daysStr = diff > 0 ? diff + " days away" : (diff === 0 ? "Starts today!" : "Underway!");
+    var playersHtml = f.players.map(function(p){
+      return buildAvatar(p, "#ffffff", "background:rgba(255,255,255,0.18);border-color:rgba(255,255,255,0.35)");
+    }).join("");
+    return "<div class='following-card following-card-banner'>" +
+      "<div class='banner-left'>" +
+        "<span class='banner-emoji'>" + f.emoji + "</span>" +
+        "<div>" +
+          "<span class='following-sport banner-sport'>" + escH(f.sport) + "</span>" +
+          "<strong class='following-name banner-name'>" + escH(f.name) + "</strong>" +
+          "<p class='following-note banner-note'>" + escH(f.note) + "</p>" +
+        "</div>" +
+      "</div>" +
+      "<div class='banner-right'>" +
+        "<div class='banner-stats'>" +
+          "<div class='banner-stat'><span class='banner-stat-val'>48</span><span class='banner-stat-lbl'>Teams</span></div>" +
+          "<div class='banner-stat-sep'></div>" +
+          "<div class='banner-stat'><span class='banner-stat-val'>Jun 11</span><span class='banner-stat-lbl'>Kickoff · USA</span></div>" +
+          "<div class='banner-stat-sep'></div>" +
+          "<div class='banner-stat'><span class='banner-stat-val'>" + escH(daysStr) + "</span><span class='banner-stat-lbl'>Countdown</span></div>" +
+        "</div>" +
+        "<div class='fp-row banner-fp-row'>" + playersHtml + "</div>" +
+      "</div>" +
+    "</div>";
+  }
+
+  function buildCompactCard(f) {
+    var briefHtml = f.facts.map(function(fact){
+      return "<span class='following-fact'>" + escH(fact) + "</span>";
+    }).join("");
+    var playersHtml = f.players.map(function(p){ return buildAvatar(p, f.bg); }).join("");
+    var logoHtml = f.logo
+      ? "<img src='" + f.logo + "' class='following-logo-img' alt='' loading='lazy' />"
+      : "";
+    var badgeHtml = f.badge
+      ? "<span class='following-badge'>" + escH(f.badge) + "</span>"
+      : "";
+    return "<div class='following-card'>" +
+      "<div class='following-card-hd' style='background:" + f.bg + ";color:" + f.fg + "'>" +
+        "<span class='following-emoji'>" + f.emoji + "</span>" +
+        "<div>" +
+          "<span class='following-sport'>" + escH(f.sport) + "</span>" +
+          "<strong class='following-name'>" + escH(f.name) + "</strong>" +
+          badgeHtml +
+        "</div>" +
+        (logoHtml ? "<div class='following-logo-wrap'>" + logoHtml + "</div>" : "") +
+      "</div>" +
+      "<div class='following-card-bd'>" +
+        "<div class='following-facts-brief'>" + briefHtml + "</div>" +
+        "<div class='following-expand'>" +
+          "<p class='following-note'>" + escH(f.note) + "</p>" +
+          "<div class='fp-row'>" + playersHtml + "</div>" +
+        "</div>" +
+      "</div>" +
+    "</div>";
+  }
+
+  function renderFollowing() {
+    if (!elFollowing) return;
+    var featured = FOLLOWING.filter(function(f){ return f.featured; });
+    var banner   = FOLLOWING.filter(function(f){ return f.banner; });
+    var compact  = FOLLOWING.filter(function(f){ return !f.featured && !f.banner; });
+    var html = "";
+    featured.forEach(function(f){ html += buildFeaturedCard(f); });
+    banner.forEach(function(f){   html += buildBannerCard(f); });
+    if (compact.length) {
+      html += "<div class='following-tier-divider'>Also following</div>";
+      compact.forEach(function(f){ html += buildCompactCard(f); });
+    }
+    elFollowing.innerHTML = html;
+  }
+
+  document.addEventListener("click", function (e) {
+    // View toggle
+    var viewBtn = e.target.closest("[data-view]");
+    if (viewBtn) {
+      curView = viewBtn.dataset.view;
+      [].forEach.call(document.querySelectorAll(".cal-view-btn"), function (b) {
+        b.classList.toggle("active", b.dataset.view === curView);
+      });
+      selDay = null;
+      if (elDetail) elDetail.setAttribute("hidden", "");
+      renderCal();
+      return;
+    }
+    // Day click
+    var dayEl = e.target.closest("[data-date]");
+    if (dayEl && elGrid && elGrid.contains(dayEl)) {
+      selDay = dayEl.dataset.date;
+      [].forEach.call(elGrid.querySelectorAll(".cal-selected"), function (el) { el.classList.remove("cal-selected"); });
+      dayEl.classList.add("cal-selected");
+      renderDetail(selDay);
+      return;
+    }
+    // Nav (month or week)
+    var navBtn = e.target.closest("[data-nav]");
+    if (navBtn) {
+      var delta = parseInt(navBtn.dataset.nav, 10);
+      if (curView === "week") {
+        curWeekStart = new Date(curWeekStart);
+        curWeekStart.setDate(curWeekStart.getDate() + delta * 7);
+      } else {
+        curMonth += delta;
+        if (curMonth > 11) { curMonth = 0; curYear++; }
+        if (curMonth < 0)  { curMonth = 11; curYear--; }
+      }
+      selDay = null;
+      if (elDetail) elDetail.setAttribute("hidden", "");
+      renderCal();
+      return;
+    }
+    // Filter chip
+    var chipEl = e.target.closest("[data-fkey]");
+    if (chipEl && elFilters && elFilters.contains(chipEl)) {
+      var key = chipEl.dataset.fkey;
+      activeFilters[key] = !activeFilters[key];
+      chipEl.classList.toggle("inactive", !activeFilters[key]);
+      renderCal();
+      if (selDay) renderDetail(selDay);
+      return;
+    }
+    // Close detail
+    if (e.target.closest("[data-detail-close]")) {
+      if (elDetail) elDetail.setAttribute("hidden", "");
+      selDay = null;
+      if (elGrid) [].forEach.call(elGrid.querySelectorAll(".cal-selected"), function (el) { el.classList.remove("cal-selected"); });
+      return;
+    }
+    // Export
+    if (e.target.closest("[data-export]")) {
+      var toExp = [];
+      for (var i = 0; i < allEvents.length; i++) {
+        if (activeFilters[allEvents[i].sport]) toExp.push(allEvents[i]);
+      }
+      downloadICS(generateICS(toExp), "bowen-sports.ics");
+      return;
+    }
+    // Add single event
+    var addBtn = e.target.closest("[data-add-cal]");
+    if (addBtn) {
+      var evId = addBtn.dataset.addCal;
+      for (var j = 0; j < allEvents.length; j++) {
+        if (allEvents[j].id === evId) { downloadICS(generateICS([allEvents[j]]), "game.ics"); break; }
+      }
+    }
+  });
+
+  function fetchAll() {
+    addTennisEvents();
+    SPORTS.forEach(function (s) {
+      if (s.type === "static") return;
+      if (s.type === "team") fetchTeam(s);
+      else                   fetchScoreboard(s);
+    });
+  }
+
+  function addTennisEvents() {
+    var now = new Date(); now.setHours(0, 0, 0, 0);
+    WANG_XINYU.forEach(function (t) {
+      var startD = new Date(t.start + "T00:00:00");
+      var endD   = new Date(t.end   + "T00:00:00");
+      allEvents.push({
+        id: t.id, date: t.start, startDate: t.start, endDate: t.end,
+        sport: "tennis", name: t.name, teams: "", time: "", venue: t.venue,
+        broadcast: "", score: "", isoDate: t.start + "T00:00:00Z",
+        status: endD < now ? "post" : (startD <= now ? "in" : "pre"),
+        tier: t.tier, prize: t.prize || "", surface: t.surface, allDay: true,
+      });
+    });
+    renderCal();
+  }
+
+  function fetchTeam(sport) {
+    fetch(sport.url)
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        var evs = d.events || [];
+        for (var i = 0; i < evs.length; i++) {
+          var n = normalizeEv(evs[i], sport.key);
+          if (n) allEvents.push(n);
+        }
+        renderCal();
+        if (selDay) renderDetail(selDay);
+      })
+      .catch(function () {});
+  }
+
+  function fetchScoreboard(sport) {
+    var url = ESPN_BASE + sport.league + "/scoreboard?dates=" + DATE_FROM + "-" + DATE_TO + "&limit=300";
+    fetch(url)
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        var evs = d.events || [];
+        for (var i = 0; i < evs.length; i++) {
+          var n = normalizeEv(evs[i], sport.key);
+          if (n) allEvents.push(n);
+        }
+        renderCal();
+        if (selDay) renderDetail(selDay);
+      })
+      .catch(function () {});
+  }
+
+  function normalizeEv(ev, sportKey) {
+    if (!ev.date) return null;
+    var ds   = ev.date.substring(0, 10);
+    var comp = (ev.competitions && ev.competitions[0]) || {};
+    var stat = (comp.status && comp.status.type) || {};
+    var state = stat.state || "pre";
+    var d = new Date(ev.date);
+    var timeStr = d.toLocaleTimeString("en-US", { hour:"numeric", minute:"2-digit" });
+    var venue = (comp.venue && comp.venue.fullName) || "";
+    var broadcast = "";
+    if (comp.broadcasts && comp.broadcasts[0]) {
+      var b = comp.broadcasts[0];
+      var names = b.names || (b.media && [b.media.shortName]) || [];
+      broadcast = names[0] || "";
+    }
+    var comps = comp.competitors || [];
+    var teams = "", score = "";
+    if (comps.length >= 2) {
+      var away = null, home = null;
+      for (var i = 0; i < comps.length; i++) {
+        if (comps[i].homeAway === "away") away = comps[i];
+        else home = comps[i];
+      }
+      if (!away) away = comps[0];
+      if (!home) home = comps[1];
+      var aA = (away.team && (away.team.abbreviation || away.team.shortDisplayName)) || "?";
+      var hA = (home.team && (home.team.abbreviation || home.team.shortDisplayName)) || "?";
+      teams = aA + " @ " + hA;
+      if ((state === "in" || state === "post") && away.score != null && home.score != null) {
+        score = away.score + " – " + home.score;
+      }
+    } else {
+      teams = ev.shortName || ev.name || "";
+    }
+    return {
+      id: ev.id || (sportKey + "-" + ds + "-" + (Math.random() * 1e6 | 0)),
+      date: ds, isoDate: ev.date,
+      sport: sportKey, name: ev.name || teams || "",
+      teams: teams, time: timeStr, venue: venue,
+      broadcast: broadcast, status: state, score: score,
+    };
+  }
+
+  function icsDateStr(ev, useEnd) {
+    if (ev.allDay) {
+      var s = useEnd ? (ev.endDate || ev.date) : ev.date;
+      return s.replace(/-/g, "");
+    }
+    var iso = useEnd
+      ? new Date(new Date(ev.isoDate || ev.date).getTime() + 7200000).toISOString()
+      : (ev.isoDate || ev.date + "T00:00:00Z");
+    return iso.replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+  }
+
+  function generateICS(events) {
+    var lines = ["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Bowen Sports Calendar//EN","CALSCALE:GREGORIAN","METHOD:PUBLISH"];
+    events.forEach(function (ev) {
+      if (!ev.date) return;
+      var allDay = !!ev.allDay;
+      lines.push(
+        "BEGIN:VEVENT",
+        "UID:" + escICS(ev.id) + "@bowen-sports",
+        "DTSTART" + (allDay ? ";VALUE=DATE:" : ":") + icsDateStr(ev, false),
+        "DTEND"   + (allDay ? ";VALUE=DATE:" : ":") + icsDateStr(ev, true),
+        "SUMMARY:" + escICS(ev.teams || ev.name),
+        "DESCRIPTION:" + escICS(ev.tier || ev.sport || ""),
+        "LOCATION:" + escICS(ev.venue || ""),
+        "END:VEVENT"
+      );
+    });
+    lines.push("END:VCALENDAR");
+    return lines.join("\r\n");
+  }
+
+  function downloadICS(content, filename) {
+    var blob = new Blob([content], { type:"text/calendar;charset=utf-8" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = filename || "schedule.ics";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+  }
+
+  var urlSport = new URLSearchParams(location.search).get("sport");
+  if (urlSport) {
+    var targetKey = ESPN_TO_KEY[decodeURIComponent(urlSport)];
+    if (targetKey) {
+      SPORTS.forEach(function (s) { activeFilters[s.key] = (s.key === targetKey); });
+    }
+  }
+
+  renderFilters();
+  renderCal();
+  renderFollowing();
+  fetchAll();
+
 })();
 

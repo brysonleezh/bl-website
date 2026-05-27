@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Game | Bowen Li</title>
+    <meta
+      name="description"
+      content="Game calendar for every sport Bowen follows — PL, UCL, NBA, F1, Dodgers, Kings, and more."
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="index.html#home" aria-label="Back to home">
+        <img src="assets/profile.jpeg" srcset="assets/profile.jpeg 1x, assets/profile@2x.jpeg 2x" alt="Bowen Li" />
+        <span>Bowen Li</span>
+      </a>
+      <nav class="nav" aria-label="Primary navigation">
+        <a href="index.html#home">Home</a>
+        <a href="now.html">Now</a>
+        <a href="sports.html" class="active">Game</a>
+        <a href="assets/BowenLi.pdf">Resume</a>
+        <a href="https://calendly.com/bowenlizh" target="_blank" rel="noopener noreferrer" class="nav-book">Book a call</a>
+      </nav>
+    </header>
+
+    <main class="page">
+      <section class="sports-page">
+
+        <div class="sports-hero">
+          <span class="card-kicker">Schedule</span>
+          <h1 class="sports-heading">Game Calendar.</h1>
+          <p class="sports-subhead">Six months of fixtures. Filter by sport, click a day, export to calendar.</p>
+        </div>
+
+        <!-- Filter chips — JS renders -->
+        <div class="sports-filter-bar" data-filter-bar aria-label="Sport filters"></div>
+
+        <!-- Month nav + export -->
+        <div class="cal-nav-row">
+          <button class="cal-nav-btn" data-nav="-1" aria-label="Previous">‹</button>
+          <span class="cal-month-label" data-month-label></span>
+          <button class="cal-nav-btn" data-nav="1" aria-label="Next">›</button>
+          <div class="cal-view-toggle" role="group" aria-label="Calendar view">
+            <button class="cal-view-btn active" data-view="month">Month</button>
+            <button class="cal-view-btn" data-view="week">Week</button>
+          </div>
+          <button class="export-cal-btn" data-export>Export .ics</button>
+        </div>
+
+        <!-- Calendar grid — JS renders -->
+        <div class="cal-grid cal-grid-month" data-cal-grid role="grid" aria-label="Sports calendar"></div>
+
+        <!-- Day detail panel — hidden until day clicked -->
+        <div class="cal-detail" data-cal-detail hidden>
+          <div class="cal-detail-header">
+            <span class="cal-detail-date" data-detail-date></span>
+            <button class="cal-detail-close" data-detail-close aria-label="Close">×</button>
+          </div>
+          <div class="cal-detail-events" data-detail-events></div>
+        </div>
+
+      </section>
+
+      <!-- Following section — JS renders cards -->
+      <section class="following-section">
+        <div class="following-header">
+          <span class="card-kicker">Following</span>
+          <h2>My Teams &amp; Players.</h2>
+        </div>
+        <div class="following-grid" data-following-grid></div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <span class="footer-name">Bowen Li</span>
+        <div class="footer-contacts">
+          <a href="mailto:bowenlizh@gmail.com">bowenlizh@gmail.com</a>
+          <span class="footer-sep">|</span>
+          <a href="mailto:bli61001@usc.edu" class="footer-usc">bli61001@usc.edu <span class="footer-usc-badge">USC</span></a>
+          <span class="footer-sep">|</span>
+          <a href="tel:+13236305773">+1 (323) 630-5773</a>
+          <span class="footer-sep">|</span>
+          <a href="https://calendly.com/bowenlizh" target="_blank" rel="noopener noreferrer">Book a call</a>
+        </div>
+        <span class="footer-copy">© 2026</span>
+      </div>
+    </footer>
+
+    <script src="main.js"></script>
+  </body>
+</html>
