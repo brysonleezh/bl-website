@@ -732,7 +732,7 @@ document.addEventListener("sport-tab-open", function (e) {
     { key:"tennis",  label:"Tennis",  full:"Wang Xinyu",       emoji:"🎾",  color:"#c8860a", type:"static" },
     { key:"wc",      label:"WC",      full:"World Cup",        emoji:"🏆",  color:"#1a56db", type:"scoreboard", league:"soccer/fifa.world" },
     { key:"pl",      label:"PL",      full:"Premier League",   emoji:"⚽️", color:"#3d195b", type:"scoreboard", league:"soccer/eng.1" },
-    { key:"ucl",     label:"UCL",     full:"Champions League", emoji:"⚽️", color:"#1d47ba", type:"scoreboard", league:"soccer/uefa.champions" },
+    { key:"ucl",     label:"UCL",     full:"Champions League", emoji:"👑",  color:"#1d47ba", type:"scoreboard", league:"soccer/uefa.champions" },
     { key:"dodgers", label:"Dodgers", full:"LA Dodgers",       emoji:"⚾️", color:"#005a9c", type:"team",       url:ESPN_BASE + "baseball/mlb/teams/19/schedule" },
     { key:"kings",   label:"Kings",   full:"LA Kings",         emoji:"🏒",  color:"#111a3c", type:"team",       url:ESPN_BASE + "hockey/nhl/teams/26/schedule" },
     { key:"ncaa",    label:"NCAA",    full:"NCAA Football",    emoji:"🏈",  color:"#bf5700", type:"scoreboard", league:"football/college-football" },
@@ -742,39 +742,37 @@ document.addEventListener("sport-tab-open", function (e) {
   var ESPN_HS = "https://a.espncdn.com/combiner/i?img=/i/headshots/";
   var FOLLOWING = [
     {
-      key:"alonso", name:"Fernando Alonso", sport:"Formula 1", emoji:"🏎️", bg:"#00594f", fg:"#a6e22e",
-      featured:true, badge:"2026 Season", logo:"https://a.espncdn.com/combiner/i?img=/i/teamlogos/racing/500/astm.png",
+      key:"alonso", name:"Fernando Alonso", sport:"Formula 1", emoji:"🏎️", bg:"#003a33", fg:"#7db320",
+      featured:true, badge:"2026 Season", logo:"assets/following/aston-martin.png",
       facts:["2× World Champion","Aston Martin AMR25","El Plan 33"],
       note:"Watched him dominate in Ferrari red. Still chasing that 3rd title at Aston Martin.",
       players:[
         { name:"Alonso #14", photo:"assets/following/alonso.jpg" },
-        { name:"Stroll #18", photo:"" },
       ],
     },
     {
-      key:"lakers", name:"LA Lakers", sport:"NBA", emoji:"🏀", bg:"#552583", fg:"#FDB927",
+      key:"lakers", name:"LA Lakers", sport:"NBA", emoji:"🏀", bg:"#371855", fg:"#d49c1e",
       featured:true, badge:"Playoffs 🔥", logo:"https://a.espncdn.com/combiner/i?img=/i/teamlogos/nba/500/lal.png",
-      facts:["17× NBA Champion","Kobe → LeBron era","Crypto.com Arena"],
-      note:"Been watching since Kobe's 2010 chip. Still bleed purple and gold.",
+      facts:["17× NBA Champion","LeBron + Luka era","Crypto.com Arena"],
+      note:"Been watching since Kobe's 2010 chip. LeBron + Luka is a scary duo.",
       players:[
-        { name:"LeBron James",  photo: ESPN_HS + "nba/players/full/1966.png&h=160&w=160" },
-        { name:"Anthony Davis", photo: ESPN_HS + "nba/players/full/3202.png&h=160&w=160" },
-        { name:"A. Reaves",     photo: ESPN_HS + "nba/players/full/4066457.png&h=160&w=160" },
+        { name:"LeBron James", photo: ESPN_HS + "nba/players/full/1966.png&h=260" },
+        { name:"Luka Doncic",  photo: ESPN_HS + "nba/players/full/3945274.png&h=260" },
+        { name:"A. Reaves",    photo: ESPN_HS + "nba/players/full/4066457.png&h=260" },
       ],
     },
     {
-      key:"clippers", name:"LA Clippers", sport:"NBA", emoji:"🏀", bg:"#c8102e", fg:"#ffffff",
+      key:"clippers", name:"LA Clippers", sport:"NBA", emoji:"🏀", bg:"#820a1e", fg:"#ffffff",
       featured:true, badge:"Playoffs 🔥", logo:"https://a.espncdn.com/combiner/i?img=/i/teamlogos/nba/500/lac.png",
-      facts:["James Harden era","Kawhi Leonard","New Intuit Dome"],
-      note:"Started watching for James Harden. Intuit Dome is a great arena.",
+      facts:["Kawhi Leonard era","Bradley Beal","New Intuit Dome"],
+      note:"Kawhi staying healthy is the whole season. Intuit Dome is a great arena.",
       players:[
-        { name:"James Harden",  photo: ESPN_HS + "nba/players/full/3992.png&h=160&w=160" },
-        { name:"Kawhi Leonard", photo: ESPN_HS + "nba/players/full/6450.png&h=160&w=160" },
-        { name:"N. Powell",     photo:"" },
+        { name:"Kawhi Leonard", photo:"https://cdn.nba.com/headshots/nba/latest/260x190/202695.png" },
+        { name:"Bradley Beal",  photo: ESPN_HS + "nba/players/full/6580.png&h=260" },
       ],
     },
     {
-      key:"xinyu", name:"Wang Xinyu", sport:"WTA Tennis", emoji:"🎾", bg:"#c8860a", fg:"#fff4d6",
+      key:"xinyu", name:"Wang Xinyu", sport:"WTA Tennis", emoji:"🎾", bg:"#825707", fg:"#fef0c0",
       featured:true, badge:"Roland Garros 🌸", logo:"",
       facts:["China 🇨🇳","Right-handed","WTA Top 50"],
       note:"Following her rise through the WTA ranks. China's most exciting player.",
@@ -783,7 +781,7 @@ document.addEventListener("sport-tab-open", function (e) {
       ],
     },
     {
-      key:"wc", name:"World Cup 2026", sport:"Soccer", emoji:"🏆", bg:"#1a56db", fg:"#ffffff",
+      key:"wc", name:"World Cup 2026", sport:"Soccer", emoji:"🏆", bg:"#11388e", fg:"#ffffff",
       banner:true, badge:"Jun 11 · USA", logo:"",
       facts:["48 Teams · USA/Canada/Mexico","June 11 – July 19, 2026","First NA since 1994"],
       note:"First World Cup on US soil since 1994. Can't miss a single match.",
@@ -794,7 +792,7 @@ document.addEventListener("sport-tab-open", function (e) {
       ],
     },
     {
-      key:"dodgers", name:"LA Dodgers", sport:"MLB", emoji:"⚾️", bg:"#005a9c", fg:"#ef3e42",
+      key:"dodgers", name:"LA Dodgers", sport:"MLB", emoji:"⚾️", bg:"#003a65", fg:"#c43033",
       logo:"https://a.espncdn.com/combiner/i?img=/i/teamlogos/mlb/500/lad.png",
       facts:["2020 & 2024 Champions","Shohei Ohtani","Dodger Stadium"],
       note:"Yamamoto's arm is unreal. Back-to-back champions — this team is special.",
@@ -805,7 +803,7 @@ document.addEventListener("sport-tab-open", function (e) {
       ],
     },
     {
-      key:"spurs", name:"Tottenham Hotspur", sport:"Premier League", emoji:"⚽️", bg:"#132257", fg:"#ffffff",
+      key:"spurs", name:"Tottenham Hotspur", sport:"Premier League", emoji:"⚽️", bg:"#0c1639", fg:"#ffffff",
       logo:"https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/253.png",
       facts:["Son Heung-min fan","1961 Double winners","Spurs Stadium, London"],
       note:"Son Heung-min fan since his breakout season. 손흥민.",
@@ -815,7 +813,7 @@ document.addEventListener("sport-tab-open", function (e) {
       ],
     },
     {
-      key:"kings", name:"LA Kings", sport:"NHL", emoji:"🏒", bg:"#111a3c", fg:"#a2aaad",
+      key:"kings", name:"LA Kings", sport:"NHL", emoji:"🏒", bg:"#0b1127", fg:"#8c9598",
       logo:"https://a.espncdn.com/combiner/i?img=/i/teamlogos/nhl/500/la.png",
       facts:["2× Stanley Cup","Drew Doughty","Crypto.com Arena"],
       note:"Tune in when the playoffs heat up. LA's other arena team.",
@@ -825,7 +823,7 @@ document.addEventListener("sport-tab-open", function (e) {
       ],
     },
     {
-      key:"usc", name:"USC Trojans", sport:"NCAA Football", emoji:"🏈", bg:"#990000", fg:"#ffc72c",
+      key:"usc", name:"USC Trojans", sport:"NCAA Football", emoji:"🏈", bg:"#630000", fg:"#d9a624",
       logo:"https://a.espncdn.com/combiner/i?img=/i/teamlogos/ncaa/500/30.png",
       facts:["11× Natl Champions","Fight On!","LA Memorial Coliseum"],
       note:"Local school, big games. Fight On! Watch for the big rivalry matchups.",
@@ -852,7 +850,7 @@ document.addEventListener("sport-tab-open", function (e) {
 
   var allEvents     = [];
   var activeFilters = {};
-  SPORTS.forEach(function (s) { activeFilters[s.key] = true; });
+  SPORTS.forEach(function (s) { activeFilters[s.key] = (s.key === "nba" || s.key === "pl" || s.key === "ucl"); });
   var curYear      = today.getFullYear();
   var curMonth     = today.getMonth();
   var curView      = "month";
@@ -869,6 +867,7 @@ document.addEventListener("sport-tab-open", function (e) {
   function pad2(n)      { return n < 10 ? "0" + n : "" + n; }
   function toDs(d)      { return d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate()); }
   function escH(s)      { return String(s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+  function escA(s)      { return escH(s).replace(/'/g,"&#39;"); }
   function escICS(s)    { return String(s || "").replace(/\\/g,"\\\\").replace(/;/g,"\\;").replace(/,/g,"\\,").replace(/\n/g,"\\n"); }
   function findSport(k) { for (var i = 0; i < SPORTS.length; i++) { if (SPORTS[i].key === k) return SPORTS[i]; } return null; }
 
@@ -886,12 +885,21 @@ document.addEventListener("sport-tab-open", function (e) {
 
   function renderFilters() {
     if (!elFilters) return;
-    elFilters.innerHTML = SPORTS.map(function (s) {
+    var btns = SPORTS.map(function (s) {
       var active = activeFilters[s.key];
-      return "<button class='sport-filter-chip" + (active ? "" : " inactive") + "'" +
-             " data-fkey='" + s.key + "' style='--cc:" + s.color + "'>" +
-             s.emoji + " " + escH(s.full) + "</button>";
+      return "<button class='sport-btn" + (active ? "" : " inactive") + "'" +
+             " data-fkey='" + s.key + "' style='--cc:" + s.color + "'" +
+             " aria-label='" + escH(s.full) + " filter' aria-pressed='" + (active ? "true" : "false") + "'>" +
+             "<span class='sport-emoji'>" + s.emoji + "</span>" +
+             "</button>";
     }).join("");
+    elFilters.innerHTML =
+      "<div class='cal-filter-inner'>" +
+        "<span class='sport-bar-dec' aria-hidden='true'>«</span>" +
+        btns +
+        "<span class='sport-bar-dec' aria-hidden='true'>»</span>" +
+      "</div>" +
+      "<p class='cal-filter-hint'>Tap a sport to show or hide it on the calendar</p>";
   }
 
   function eventsOnDay(ds) {
@@ -945,11 +953,26 @@ document.addEventListener("sport-tab-open", function (e) {
         var ev = sorted[i];
         var sp = findSport(ev.sport);
         var col = sp ? sp.color : "#20242a";
+        var spKey = sp ? sp.key : "";
         if (ev.allDay) {
-          chipsHtml += "<span class='cal-chip cal-chip-allday' style='--chip-bg:" + col + "'>" + escH(ev.name.split(" ")[0]) + "</span>";
+          chipsHtml += "<span class='cal-chip cal-chip-allday'" +
+            " style='--chip-bg:" + col + "'" +
+            " data-sport='" + escA(spKey) + "'" +
+            " data-teams='" + escA(ev.name || "") + "'" +
+            " data-venue='" + escA(ev.venue || "") + "'" +
+            " data-allday='1'>" +
+            escH(ev.name.split(" ")[0]) + "</span>";
         } else {
           var lbl = (ev.teams || ev.name || "").substring(0, 11);
-          chipsHtml += "<span class='cal-chip' style='--chip-bg:" + col + "'>" + escH(lbl) + "</span>";
+          chipsHtml += "<span class='cal-chip'" +
+            " style='--chip-bg:" + col + "'" +
+            " data-sport='" + escA(spKey) + "'" +
+            " data-teams='" + escA(ev.teams || ev.name || "") + "'" +
+            " data-time='" + escA(ev.time || "") + "'" +
+            " data-venue='" + escA(ev.venue || "") + "'" +
+            " data-status='" + escA(ev.status || "pre") + "'" +
+            " data-score='" + escA(ev.score || "") + "'>" +
+            escH(lbl) + "</span>";
         }
       }
       if (sorted.length > 2) {
@@ -1271,6 +1294,68 @@ document.addEventListener("sport-tab-open", function (e) {
       }
     }
   });
+
+  // ── Chip hover tooltip ──────────────────────────────────────
+  var chipTip = document.createElement("div");
+  chipTip.className = "cal-chip-tip";
+  chipTip.setAttribute("aria-hidden", "true");
+  document.body.appendChild(chipTip);
+
+  function showChipTip(chip) {
+    var sp = findSport(chip.dataset.sport || "");
+    var emoji     = sp ? sp.emoji : "";
+    var sportName = sp ? sp.full  : "";
+    var teams   = chip.dataset.teams  || chip.textContent || "";
+    var time    = chip.dataset.time   || "";
+    var venue   = chip.dataset.venue  || "";
+    var status  = chip.dataset.status || "pre";
+    var score   = chip.dataset.score  || "";
+    var isAllDay = chip.dataset.allday === "1";
+
+    var statusHtml = "";
+    if (status === "in") {
+      statusHtml = "<span class='cal-chip-tip-live'>● LIVE</span>";
+    } else if (status === "post" && score) {
+      statusHtml = "<span class='cal-chip-tip-score'>" + escH(score) + "</span>";
+    }
+
+    var sub = isAllDay
+      ? "All day" + (venue ? " · " + venue : "")
+      : [time, venue].filter(Boolean).join(" · ");
+
+    chipTip.innerHTML =
+      (sportName ? "<span class='cal-chip-tip-sport'>" + emoji + " " + escH(sportName) + "</span>" : "") +
+      "<strong class='cal-chip-tip-teams'>" + escH(teams) + statusHtml + "</strong>" +
+      (sub ? "<span class='cal-chip-tip-sub'>" + escH(sub) + "</span>" : "");
+
+    // Position: measure real height then place above chip
+    var rect   = chip.getBoundingClientRect();
+    var tipW   = 220;
+    var tipH   = chipTip.offsetHeight || 68;
+    var chipCx = rect.left + rect.width / 2;
+    var clampedLeft = Math.max(tipW / 2 + 8, Math.min(chipCx, window.innerWidth - tipW / 2 - 8));
+    var arrowLeft = Math.max(18, Math.min(chipCx - (clampedLeft - tipW / 2), tipW - 18));
+
+    chipTip.style.left = (clampedLeft - tipW / 2) + "px";
+    chipTip.style.top  = (rect.top + window.scrollY - tipH - 10) + "px";
+    chipTip.style.setProperty("--tip-ax", arrowLeft + "px");
+    chipTip.classList.add("is-visible");
+  }
+
+  function hideChipTip() {
+    chipTip.classList.remove("is-visible");
+  }
+
+  if (elGrid) {
+    elGrid.addEventListener("mouseover", function (e) {
+      var chip = e.target.closest(".cal-chip[data-sport]");
+      if (chip) showChipTip(chip);
+    });
+    elGrid.addEventListener("mouseout", function (e) {
+      if (e.target.closest(".cal-chip[data-sport]")) hideChipTip();
+    });
+  }
+  // ────────────────────────────────────────────────────────────
 
   function fetchAll() {
     addTennisEvents();

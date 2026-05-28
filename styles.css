@@ -3542,42 +3542,37 @@ h1 {
 
 /* ── Filter chips ── */
 .sports-filter-bar {
+  margin-bottom: 8px;
+  padding: 16px 0 4px;
+  border-top: 2px solid rgba(32, 36, 42, 0.08);
+  border-bottom: 2px solid rgba(32, 36, 42, 0.08);
+}
+
+.cal-filter-inner {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 20px;
-  padding: 12px 14px;
-  border: 2px solid var(--ink);
-  border-radius: 14px;
-  background: var(--white);
-  box-shadow: 3px 3px 0 var(--ink);
-}
-
-.sport-filter-chip {
-  display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 5px 13px;
-  border: 2px solid var(--cc, #20242a);
-  border-radius: 100px;
-  background: var(--cc, #20242a);
-  color: #fff;
-  cursor: pointer;
-  font-size: 12px;
-  font-weight: 700;
-  font-family: inherit;
-  transition: opacity 140ms, filter 140ms;
-  white-space: nowrap;
+  justify-content: center;
+  gap: 8px;
 }
 
-.sport-filter-chip.inactive {
-  background: none;
-  color: var(--cc, #20242a);
-  opacity: 0.45;
+.cal-filter-hint {
+  text-align: center;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+  margin: 6px 0 16px;
+  opacity: 0.7;
 }
 
-.sport-filter-chip:hover {
-  opacity: 0.8;
+/* Selected: subtle tint ring */
+.sports-filter-bar .sport-btn:not(.inactive) {
+  background: rgba(32, 36, 42, 0.07);
+}
+
+/* Inactive / unselected: faded */
+.sports-filter-bar .sport-btn.inactive {
+  opacity: 0.28;
 }
 
 /* ── Calendar nav row ── */
@@ -3651,13 +3646,14 @@ h1 {
 .cal-dow {
   padding: 10px 6px;
   text-align: center;
-  font-size: 11px;
+  font-size: 0.7rem;
   font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.07em;
-  background: var(--ink);
-  color: var(--white);
-  border-right: 1px solid rgba(255, 253, 248, 0.12);
+  letter-spacing: 0.12em;
+  background: rgba(32, 36, 42, 0.03);
+  color: var(--muted);
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
 }
 
 .cal-dow:last-child {
@@ -3882,6 +3878,17 @@ h1 {
   text-transform: uppercase;
 }
 
+/* Staggered bounce for calendar filter emojis */
+.cal-filter-inner .sport-btn:nth-child(1) .sport-emoji { animation-delay: 0s; }
+.cal-filter-inner .sport-btn:nth-child(2) .sport-emoji { animation-delay: 0.13s; }
+.cal-filter-inner .sport-btn:nth-child(3) .sport-emoji { animation-delay: 0.26s; }
+.cal-filter-inner .sport-btn:nth-child(4) .sport-emoji { animation-delay: 0.39s; }
+.cal-filter-inner .sport-btn:nth-child(5) .sport-emoji { animation-delay: 0.52s; }
+.cal-filter-inner .sport-btn:nth-child(6) .sport-emoji { animation-delay: 0.65s; }
+.cal-filter-inner .sport-btn:nth-child(7) .sport-emoji { animation-delay: 0.78s; }
+.cal-filter-inner .sport-btn:nth-child(8) .sport-emoji { animation-delay: 0.91s; }
+.cal-filter-inner .sport-btn:nth-child(9) .sport-emoji { animation-delay: 1.04s; }
+
 .surface-hard  { background: #b3d4f0; color: #0a2e4a; }
 .surface-clay  { background: #f0c8a0; color: #4a1a00; }
 .surface-grass { background: #b8e8c0; color: #0a3a14; }
@@ -3896,12 +3903,13 @@ h1 {
 /* ── Responsive ── */
 @media (max-width: 820px) {
   .sports-heading { font-size: clamp(1.8rem, 6vw, 2.6rem); }
-  .sports-filter-bar { gap: 6px; }
-  .sport-filter-chip { font-size: 11px; padding: 4px 10px; }
+  .cal-filter-inner { gap: 4px; }
+  .sports-filter-bar { padding: 12px 0 4px; }
   .cal-month-label { font-size: 17px; }
 }
 
 @media (max-width: 540px) {
+  .cal-chip { font-size: 0.66rem; padding-left: 6px; border-left-width: 4px; }
   .cal-day     { min-height: 58px; padding: 5px 4px 4px; }
   .cal-day-num { font-size: 12px; }
   .cal-dot     { width: 6px; height: 6px; }
@@ -3948,13 +3956,15 @@ h1 {
 }
 
 .cal-chip {
+  --chip-bar: color-mix(in srgb, var(--chip-bg, #20242a) 55%, #aaaaaa);
   display: block;
-  padding: 1px 5px;
-  border-radius: 4px;
-  font-size: 9px;
+  padding: 1px 5px 1px 8px;
+  border-radius: 3px;
+  font-size: 0.72rem;
   font-weight: 700;
-  color: #fff;
-  background: var(--chip-bg, #20242a);
+  color: var(--ink);
+  background: #fff;
+  border-left: 4px solid var(--chip-bar);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -3962,17 +3972,78 @@ h1 {
 }
 
 .cal-chip-allday {
-  opacity: 0.88;
   border-radius: 3px;
 }
 
 .cal-chip-more {
-  background: rgba(32, 36, 42, 0.1) !important;
-  color: var(--ink) !important;
+  background: transparent !important;
+  border-left: none !important;
+  color: var(--muted) !important;
   font-weight: 600;
+  padding-left: 5px;
 }
 
 .cal-dots-mobile { display: none; }
+
+/* ── Chip hover tooltip ── */
+.cal-chip-tip {
+  position: absolute;
+  z-index: 200;
+  width: 220px;
+  background: var(--ink);
+  color: var(--white);
+  border-radius: 12px;
+  padding: 11px 14px 12px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 140ms ease;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+.cal-chip-tip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: var(--tip-ax, 110px);
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: var(--ink);
+}
+.cal-chip-tip.is-visible {
+  opacity: 1;
+}
+.cal-chip-tip-sport {
+  display: block;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.42;
+  margin-bottom: 5px;
+}
+.cal-chip-tip-teams {
+  display: block;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.25;
+  margin-bottom: 3px;
+}
+.cal-chip-tip-sub {
+  display: block;
+  font-size: 11px;
+  opacity: 0.5;
+}
+.cal-chip-tip-live {
+  color: var(--coral);
+  font-size: 10px;
+  font-weight: 800;
+  margin-left: 6px;
+}
+.cal-chip-tip-score {
+  font-size: 11px;
+  font-weight: 800;
+  opacity: 0.7;
+  margin-left: 6px;
+}
 
 /* ── Week view ── */
 .cal-grid-week {
@@ -4112,8 +4183,9 @@ h1 {
 }
 
 .following-logo-featured {
-  width: 48px;
-  height: 48px;
+  width: 90px;
+  height: auto;
+  object-fit: contain;
 }
 
 .following-card-bd-featured {
@@ -4128,18 +4200,21 @@ h1 {
 }
 
 .following-card-bd-featured .fp-avatar {
-  width: 52px;
-  height: 52px;
+  width: 64px;
+  height: 64px;
 }
 
 .following-card-bd-featured .fp-item {
-  max-width: 60px;
+  max-width: 74px;
+}
+.following-card-bd-featured .fp-name {
+  font-size: 10.5px;
 }
 
 /* ── Tier 2: World Cup banner ── */
 .following-card-banner {
   grid-column: span 4;
-  background: #1a56db;
+  background: #11388e;
   color: #ffffff;
   display: grid;
   grid-template-columns: 1fr auto;
