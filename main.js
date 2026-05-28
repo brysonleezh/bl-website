@@ -1036,15 +1036,30 @@ document.addEventListener("sport-tab-open", function (e) {
           var ev = dayEvs[i];
           var sp = findSport(ev.sport);
           var col = sp ? sp.color : "#20242a";
+          var wSpKey = sp ? sp.key : "";
           if (ev.allDay) {
-            inner += "<div class='week-ev week-ev-allday' style='background:" + col + "18;border-left-color:" + col + "' data-date='" + ds + "'>" +
+            inner += "<div class='week-ev week-ev-allday'" +
+              " style='background:" + col + "18;border-left-color:" + col + "'" +
+              " data-date='" + ds + "'" +
+              " data-sport='" + escA(wSpKey) + "'" +
+              " data-teams='" + escA(ev.name || "") + "'" +
+              " data-venue='" + escA(ev.venue || "") + "'" +
+              " data-allday='1'>" +
               "<span class='week-ev-emoji'>" + (sp ? sp.emoji : "") + "</span>" +
               "<span class='week-ev-title'>" + escH(ev.name) + "</span>" +
               "<span class='week-ev-sub'>" + escH(ev.tier || "") + "</span>" +
             "</div>";
           } else {
             var liveHtml = ev.status === "in" ? "<span class='game-status-live'>LIVE</span>" : "";
-            inner += "<div class='week-ev' style='border-left-color:" + col + "' data-date='" + ds + "'>" +
+            inner += "<div class='week-ev'" +
+              " style='border-left-color:" + col + "'" +
+              " data-date='" + ds + "'" +
+              " data-sport='" + escA(wSpKey) + "'" +
+              " data-teams='" + escA(ev.teams || ev.name || "") + "'" +
+              " data-time='" + escA(ev.time || "") + "'" +
+              " data-venue='" + escA(ev.venue || "") + "'" +
+              " data-status='" + escA(ev.status || "pre") + "'" +
+              " data-score='" + escA(ev.score || "") + "'>" +
               "<span class='week-ev-emoji'>" + (sp ? sp.emoji : "") + "</span>" +
               "<span class='week-ev-title'>" + escH(ev.teams || ev.name) + "</span>" +
               "<span class='week-ev-sub'>" + escH(ev.time || "") + (ev.broadcast ? " · " + escH(ev.broadcast) : "") + "</span>" +
@@ -1301,11 +1316,15 @@ document.addEventListener("sport-tab-open", function (e) {
   chipTip.setAttribute("aria-hidden", "true");
   document.body.appendChild(chipTip);
 
+  var _hideTimer = null;
+
   function showChipTip(chip) {
+    clearTimeout(_hideTimer);
+
     var sp = findSport(chip.dataset.sport || "");
     var emoji     = sp ? sp.emoji : "";
     var sportName = sp ? sp.full  : "";
-    var teams   = chip.dataset.teams  || chip.textContent || "";
+    var teams   = chip.dataset.teams  || chip.textContent.trim() || "";
     var time    = chip.dataset.time   || "";
     var venue   = chip.dataset.venue  || "";
     var status  = chip.dataset.status || "pre";
@@ -1324,35 +1343,37 @@ document.addEventListener("sport-tab-open", function (e) {
       : [time, venue].filter(Boolean).join(" · ");
 
     chipTip.innerHTML =
-      (sportName ? "<span class='cal-chip-tip-sport'>" + emoji + " " + escH(sportName) + "</span>" : "") +
+      "<span class='cal-chip-tip-sport'>" + emoji + " " + escH(sportName) + "</span>" +
       "<strong class='cal-chip-tip-teams'>" + escH(teams) + statusHtml + "</strong>" +
       (sub ? "<span class='cal-chip-tip-sub'>" + escH(sub) + "</span>" : "");
 
-    // Position: measure real height then place above chip
+    // position: fixed — viewport coords, no scrollY needed
     var rect   = chip.getBoundingClientRect();
     var tipW   = 220;
-    var tipH   = chipTip.offsetHeight || 68;
+    var tipH   = chipTip.offsetHeight || 64;
     var chipCx = rect.left + rect.width / 2;
     var clampedLeft = Math.max(tipW / 2 + 8, Math.min(chipCx, window.innerWidth - tipW / 2 - 8));
-    var arrowLeft = Math.max(18, Math.min(chipCx - (clampedLeft - tipW / 2), tipW - 18));
+    var arrowLeft   = Math.max(18, Math.min(chipCx - (clampedLeft - tipW / 2), tipW - 18));
 
     chipTip.style.left = (clampedLeft - tipW / 2) + "px";
-    chipTip.style.top  = (rect.top + window.scrollY - tipH - 10) + "px";
+    chipTip.style.top  = (rect.top - tipH - 10) + "px";
     chipTip.style.setProperty("--tip-ax", arrowLeft + "px");
     chipTip.classList.add("is-visible");
   }
 
   function hideChipTip() {
-    chipTip.classList.remove("is-visible");
+    _hideTimer = setTimeout(function () {
+      chipTip.classList.remove("is-visible");
+    }, 80);
   }
 
   if (elGrid) {
     elGrid.addEventListener("mouseover", function (e) {
-      var chip = e.target.closest(".cal-chip[data-sport]");
+      var chip = e.target.closest(".cal-chip[data-sport], .week-ev[data-sport]");
       if (chip) showChipTip(chip);
     });
     elGrid.addEventListener("mouseout", function (e) {
-      if (e.target.closest(".cal-chip[data-sport]")) hideChipTip();
+      if (e.target.closest(".cal-chip[data-sport], .week-ev[data-sport]")) hideChipTip();
     });
   }
   // ────────────────────────────────────────────────────────────

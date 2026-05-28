@@ -3987,7 +3987,7 @@ h1 {
 
 /* ── Chip hover tooltip ── */
 .cal-chip-tip {
-  position: absolute;
+  position: fixed;
   z-index: 200;
   width: 220px;
   background: var(--ink);
