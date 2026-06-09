@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lab | Bowen Li</title>
+    <meta
+      name="description"
+      content="Projects by Bowen Li — NBA Draft scouting tools, shooting mechanics, pose analysis, and baseball analytics."
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="index.html#home" aria-label="Back to home">
+        <img src="assets/profile.jpeg" srcset="assets/profile.jpeg 1x, assets/profile@2x.jpeg 2x" alt="Bowen Li" />
+        <span>Bowen Li</span>
+      </a>
+      <nav class="nav" aria-label="Primary navigation">
+        <a href="index.html#home">Home</a>
+        <a href="projects.html" class="active">Lab</a>
+        <a href="sports.html">Game</a>
+        <a href="now.html">Now</a>
+        <a href="assets/BowenLi.pdf">Resume</a>
+        <a href="https://calendly.com/bowenlizh" target="_blank" rel="noopener noreferrer" class="nav-book">Book a call</a>
+      </nav>
+    </header>
+
+    <main class="page">
+      <section class="lab-page">
+
+        <div class="now-rightnow">
+          <h1 class="rightnow-heading">What's on My Desk.</h1>
+          <p class="rightnow-sub">NBA Draft scouting, shooting mechanics, pose analysis, and baseball analytics.</p>
+        </div>
+
+        <!-- Project cards — fill in as you build -->
+        <div class="lab-grid">
+
+          <article class="lab-project-card">
+            <a class="card-stretch-link" href="http://draftshoot.duckdns.org:8501/" target="_blank" rel="noopener noreferrer" aria-label="Open Draft Shooting Portal"></a>
+            <div class="lab-project-visual lab-visual-shoot">
+              <div class="lab-live-overlay">Live →</div>
+              <span class="lab-tag tag-shot">shot quality</span>
+              <span class="lab-tag tag-pose">pose model</span>
+              <span class="court-line court-arc"></span>
+              <span class="court-line court-lane"></span>
+              <span class="pose-dot dot-head"></span>
+              <span class="pose-dot dot-shoulder"></span>
+              <span class="pose-dot dot-elbow"></span>
+              <span class="pose-dot dot-wrist"></span>
+            </div>
+            <div class="lab-project-body">
+              <h2 class="lab-project-title">NBA Draft 2026 — Shot Quality Portal</h2>
+              <p class="lab-project-desc">End-to-end pipeline for 65 draft prospects via CBBD API → SQLite. LightGBM xPTS model with Empirical Bayes shrinkage (PAE/100), YOLOv11n jump-shot classifier (mAP50 = 0.828), RTMPose joint angle extraction across 20+ clips per player. 4-page Streamlit portal: draft board, dossiers, head-to-head, and film mechanics.</p>
+              <div class="lab-project-tags">
+                <span class="lab-tech-tag">Python</span>
+                <span class="lab-tech-tag">LightGBM</span>
+                <span class="lab-tech-tag">YOLOv11</span>
+                <span class="lab-tech-tag">RTMPose</span>
+                <span class="lab-tech-tag">Streamlit</span>
+                <span class="lab-tech-tag">SQLite</span>
+              </div>
+              <div class="lab-project-links">
+                <a class="lab-project-link" href="http://draftshoot.duckdns.org:8501/" target="_blank" rel="noopener noreferrer">Live →</a>
+                <a class="lab-project-link lab-project-link-ghost" href="https://github.com/brysonleezh" target="_blank" rel="noopener noreferrer">GitHub →</a>
+              </div>
+            </div>
+          </article>
+
+          <article class="lab-project-card">
+            <a class="card-stretch-link" href="https://bowenlizh.shinyapps.io/04_pd_analyst_dashboard/" target="_blank" rel="noopener noreferrer" aria-label="Open Player Dev Dashboard"></a>
+            <div class="lab-project-visual lab-visual-pd">
+              <div class="lab-live-overlay">Live →</div>
+              <span class="lab-tag tag-pd-label">shot chart</span>
+              <span class="lab-tag tag-pd-trend">trends</span>
+              <!-- half-court arc -->
+              <span class="pd-arc"></span>
+              <!-- paint / lane -->
+              <span class="pd-lane"></span>
+              <!-- shot dots: made (light) and missed (dim) -->
+              <span class="pd-dot pd-make" style="left:18%;top:28%"></span>
+              <span class="pd-dot pd-make" style="left:72%;top:22%"></span>
+              <span class="pd-dot pd-make" style="left:50%;top:14%"></span>
+              <span class="pd-dot pd-miss" style="left:30%;top:18%"></span>
+              <span class="pd-dot pd-miss" style="left:62%;top:34%"></span>
+              <span class="pd-dot pd-make" style="left:82%;top:48%"></span>
+              <span class="pd-dot pd-miss" style="left:12%;top:52%"></span>
+              <span class="pd-dot pd-make" style="left:42%;top:42%"></span>
+              <span class="pd-dot pd-miss" style="left:24%;top:62%"></span>
+              <span class="pd-dot pd-make" style="left:68%;top:58%"></span>
+            </div>
+            <div class="lab-project-body">
+              <h2 class="lab-project-title">Player Development Pitching Dashboard</h2>
+              <p class="lab-project-desc">4-tab R Shiny portal (Overview, Trends, Goals, Report) for pitcher PD. Engineered BB%, K%, SLG%, FPS% with rolling trends and season-baseline vs. configurable recent-window comparisons. Auto-generated 1-page PDF reports — actionable pitcher insight in under 30 seconds.</p>
+              <div class="lab-project-tags">
+                <span class="lab-tech-tag">R</span>
+                <span class="lab-tech-tag">Shiny</span>
+                <span class="lab-tech-tag">Tidyverse</span>
+                <span class="lab-tech-tag">ggplot2</span>
+              </div>
+              <div class="lab-project-links">
+                <a class="lab-project-link" href="https://bowenlizh.shinyapps.io/04_pd_analyst_dashboard/" target="_blank" rel="noopener noreferrer">Live →</a>
+                <a class="lab-project-link lab-project-link-ghost" href="https://github.com/brysonleezh" target="_blank" rel="noopener noreferrer">GitHub →</a>
+              </div>
+            </div>
+          </article>
+
+          <article class="lab-project-card">
+            <div class="lab-project-visual lab-visual-baseball">
+              <span class="lab-tag tag-bb-label">statcast</span>
+              <span class="lab-tag tag-bb-velo">exit velo</span>
+              <!-- strike zone grid -->
+              <div class="bb-zone">
+                <span class="bb-cell"></span><span class="bb-cell"></span><span class="bb-cell"></span>
+                <span class="bb-cell"></span><span class="bb-cell bb-cell-hot"></span><span class="bb-cell"></span>
+                <span class="bb-cell bb-cell-hot"></span><span class="bb-cell"></span><span class="bb-cell"></span>
+              </div>
+              <!-- pitch dots in/around zone -->
+              <span class="bb-pitch bb-strike" style="left:47%;top:30%"></span>
+              <span class="bb-pitch bb-strike" style="left:55%;top:44%"></span>
+              <span class="bb-pitch bb-ball"   style="left:28%;top:22%"></span>
+              <span class="bb-pitch bb-ball"   style="left:72%;top:52%"></span>
+              <span class="bb-pitch bb-strike" style="left:40%;top:52%"></span>
+              <span class="bb-pitch bb-ball"   style="left:76%;top:28%"></span>
+              <span class="bb-pitch bb-strike" style="left:62%;top:34%"></span>
+            </div>
+            <div class="lab-project-body">
+              <h2 class="lab-project-title">Baseball Analytics</h2>
+              <p class="lab-project-desc">Statcast-based scouting models — pitch movement clustering, exit velocity percentiles, and zone-based hit probability for hitter evaluation.</p>
+              <div class="lab-project-tags">
+                <span class="lab-tech-tag">Python</span>
+                <span class="lab-tech-tag">pybaseball</span>
+                <span class="lab-tech-tag">Pandas</span>
+                <span class="lab-tech-tag">Scikit-learn</span>
+              </div>
+              <div class="lab-project-links">
+                <a class="lab-project-link lab-project-link-ghost" href="https://github.com/brysonleezh" target="_blank" rel="noopener noreferrer">GitHub →</a>
+              </div>
+            </div>
+          </article>
+
+        </div>
+
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <span class="footer-name">Bowen Li</span>
+        <div class="footer-contacts">
+          <a href="mailto:bowenlizh@gmail.com">bowenlizh@gmail.com</a>
+          <span class="footer-sep">|</span>
+          <a href="mailto:bli61001@usc.edu" class="footer-usc">bli61001@usc.edu <span class="footer-usc-badge">USC</span></a>
+          <span class="footer-sep">|</span>
+          <a href="tel:+13236305773">+1 (323) 630-5773</a>
+          <span class="footer-sep">|</span>
+          <a href="https://calendly.com/bowenlizh" target="_blank" rel="noopener noreferrer">Book a call</a>
+        </div>
+        <span class="footer-copy">© 2026</span>
+      </div>
+    </footer>
+
+    <script src="main.js"></script>
+  </body>
+</html>
