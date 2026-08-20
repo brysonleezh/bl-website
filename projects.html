@@ -6,7 +6,7 @@
     <title>Lab | Bowen Li</title>
     <meta
       name="description"
-      content="Projects by Bowen Li — NBA Draft scouting tools, shooting mechanics, pose analysis, and baseball analytics."
+      content="Projects by Bowen Li — NBA player archetypes, Draft scouting tools, shooting mechanics, pose analysis, and baseball analytics."
     />
     <link rel="stylesheet" href="styles.css" />
   </head>
@@ -31,11 +31,54 @@
 
         <div class="now-rightnow">
           <h1 class="rightnow-heading">What's on My Desk.</h1>
-          <p class="rightnow-sub">NBA Draft scouting, shooting mechanics, pose analysis, and baseball analytics.</p>
+          <p class="rightnow-sub">NBA player archetypes, Draft scouting, shooting mechanics, pose analysis, and baseball analytics.</p>
         </div>
 
         <!-- Project cards — fill in as you build -->
         <div class="lab-grid">
+
+          <article class="lab-project-card">
+            <a class="card-stretch-link" href="https://nets-lineup.streamlit.app" target="_blank" rel="noopener noreferrer" aria-label="Open the Brooklyn Nets Archetype Portal"></a>
+            <div class="lab-project-visual lab-visual-nets">
+              <div class="lab-live-overlay">Live →</div>
+              <span class="lab-tag tag-arch-label">archetypes</span>
+              <span class="lab-tag tag-arch-recipe">recipe</span>
+              <span class="arch-hull"></span>
+              <!-- the 8 archetypoids: real players at the edge of the cloud -->
+              <span class="arch-dot arch-corner" style="left:50%;top:18%"></span>
+              <span class="arch-dot arch-corner" style="left:73%;top:26%"></span>
+              <span class="arch-dot arch-corner" style="left:82%;top:50%"></span>
+              <span class="arch-dot arch-corner" style="left:72%;top:74%"></span>
+              <span class="arch-dot arch-corner" style="left:50%;top:82%"></span>
+              <span class="arch-dot arch-corner" style="left:28%;top:74%"></span>
+              <span class="arch-dot arch-corner" style="left:18%;top:50%"></span>
+              <span class="arch-dot arch-corner" style="left:27%;top:26%"></span>
+              <!-- everyone else sits inside, as a blend -->
+              <span class="arch-dot arch-blend" style="left:42%;top:38%"></span>
+              <span class="arch-dot arch-blend" style="left:61%;top:41%"></span>
+              <span class="arch-dot arch-blend" style="left:37%;top:57%"></span>
+              <span class="arch-dot arch-blend" style="left:56%;top:63%"></span>
+              <span class="arch-dot arch-blend" style="left:66%;top:55%"></span>
+              <span class="arch-dot arch-blend" style="left:47%;top:70%"></span>
+              <span class="arch-dot arch-focus"  style="left:52%;top:49%"></span>
+            </div>
+            <div class="lab-project-body">
+              <h2 class="lab-project-title">Brooklyn Nets — Archetype Portal</h2>
+              <p class="lab-project-desc">Archetypoid Analysis (K = 8) fit on 433 players × 29 features, so every player reads as a blend of eight real archetypoids instead of a position label. Rebuilt the play-by-play parser on NBA v3 endpoints after pbpstats broke: 75,587 directed stints across all 1,230 games, every game reconciled to its real final score. 4-page Streamlit portal — league hull, a five-question player diagnosis (purity, role drift, teammate elasticity, miscast score), an NCAA bridge, and a 2-page PDF export.</p>
+              <div class="lab-project-tags">
+                <span class="lab-tech-tag">Python</span>
+                <span class="lab-tech-tag">Streamlit</span>
+                <span class="lab-tech-tag">Archetypoid Analysis</span>
+                <span class="lab-tech-tag">nba_api</span>
+                <span class="lab-tech-tag">Scikit-learn</span>
+                <span class="lab-tech-tag">Plotly</span>
+              </div>
+              <div class="lab-project-links">
+                <a class="lab-project-link" href="https://nets-lineup.streamlit.app" target="_blank" rel="noopener noreferrer">Live →</a>
+                <a class="lab-project-link lab-project-link-ghost" href="https://github.com/brysonleezh/nets-lineup" target="_blank" rel="noopener noreferrer">GitHub →</a>
+              </div>
+            </div>
+          </article>
 
           <article class="lab-project-card">
             <a class="card-stretch-link" href="http://draftshoot.duckdns.org:8501/" target="_blank" rel="noopener noreferrer" aria-label="Open Draft Shooting Portal"></a>

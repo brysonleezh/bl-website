@@ -75,7 +75,7 @@
           </div>
           <div>
             <h2>Court to code</h2>
-            <p>NBA Draft scouting, shooting mechanics, pose analysis, and baseball analytics.</p>
+            <p>NBA player archetypes, Draft scouting, shooting mechanics, pose analysis, and baseball analytics.</p>
           </div>
         </article>
 
@@ -166,11 +166,6 @@
               <div class="sport-popup"><strong class="sport-popup-title">MLB · Dodgers</strong><ul class="sport-popup-games" data-games><li class="sport-popup-loading">···</li></ul><span class="sport-popup-cta">Full schedule →</span></div>
             </div>
 
-            <div class="sport-item" data-sport="hockey/nhl">
-              <button class="sport-btn" aria-label="NHL schedule"><span class="sport-emoji">🏒</span></button>
-              <div class="sport-popup"><strong class="sport-popup-title">NHL · Kings</strong><ul class="sport-popup-games" data-games><li class="sport-popup-loading">···</li></ul><span class="sport-popup-cta">Full schedule →</span></div>
-            </div>
-
             <div class="sport-item" data-sport="football/college-football">
               <button class="sport-btn" aria-label="NCAA schedule"><span class="sport-emoji">🏈</span></button>
               <div class="sport-popup"><strong class="sport-popup-title">NCAA Football</strong><ul class="sport-popup-games" data-games><li class="sport-popup-loading">···</li></ul><span class="sport-popup-cta">Full schedule →</span></div>
@@ -181,13 +176,44 @@
         </div>
       </section>
 
-      <section class="picks-section" aria-labelledby="picks-title">
-        <div class="picks-intro">
-          <span class="card-kicker">Bowen's Picks</span>
-          <h2 id="picks-title">Disagree with me.</h2>
-          <p class="picks-intro-sub">Three data-backed sports takes. Vote, then see the analysis.</p>
+      <section class="filmroom-section" aria-labelledby="filmroom-title" hidden>
+        <div class="filmroom-intro">
+          <span class="card-kicker">Film Room</span>
+          <h2 id="filmroom-title">What I noticed.</h2>
         </div>
-        <div class="picks-arena" data-picks-arena></div>
+        <div class="filmroom-card">
+          <p class="filmroom-context">NBA Finals G4  ·  Q4 12.0s  ·  Kings -1  ·  Fox PnR → baseline drive → layup</p>
+          <h3 class="filmroom-play-title">Fox's Baseline Read</h3>
+          <div class="filmroom-chapter">
+            <span class="filmroom-label">The Moment</span>
+            <p class="filmroom-body">OG switches onto Fox off the PnR. He's a 6'7" wing — long, switchable, but not a rim protector. Fox reads this in real time and attacks baseline-left, his dominant finishing side.</p>
+          </div>
+          <div class="filmroom-chapter">
+            <span class="filmroom-label">The Read</span>
+            <p class="filmroom-body">Fox converts 68% at the rim against wing defenders vs. 54% against centers. The kick-out alternative — a 34% corner shooter — had ~1.02 pts of EV. Fox's layup: ~1.36 pts. The drive was the math, not the moment.</p>
+          </div>
+          <div class="filmroom-chapter">
+            <span class="filmroom-label">The Consequence</span>
+            <p class="filmroom-body">The layup gave Kings the lead with 12s left. Indiana had no timeouts. The possession ended the game. One read, correctly made under maximum pressure, defined G4.</p>
+          </div>
+          <div class="filmroom-stats">
+            <div class="filmroom-stat-chip">
+              <span class="filmroom-stat-value">68%</span>
+              <span class="filmroom-stat-label">Fox rim FG% vs. wings</span>
+              <span class="filmroom-stat-context">2024-25 regular season + playoffs</span>
+            </div>
+            <div class="filmroom-stat-chip">
+              <span class="filmroom-stat-value">+0.34</span>
+              <span class="filmroom-stat-label">pts / possession edge</span>
+              <span class="filmroom-stat-context">layup vs. kick-out 3</span>
+            </div>
+            <div class="filmroom-stat-chip">
+              <span class="filmroom-stat-value">34%</span>
+              <span class="filmroom-stat-label">Corner 3 — Kings</span>
+              <span class="filmroom-stat-context">catch-and-shoot, Finals</span>
+            </div>
+          </div>
+        </div>
       </section>
 
     </main>

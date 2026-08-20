@@ -1288,6 +1288,62 @@ h1 {
 .bb-strike { background: #f6bd2e; box-shadow: 0 0 5px rgba(246,189,46,0.5); }
 .bb-ball   { background: transparent; opacity: 0.5; }
 
+/* ── Nets: archetype hull ── */
+.lab-visual-nets {
+  background:
+    linear-gradient(90deg, rgba(255,253,248,0.06) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(255,253,248,0.06) 1px, transparent 1px),
+    #14161a;
+  background-size: 22px 22px;
+}
+.tag-arch-label {
+  left: 10px; top: 10px;
+  background: var(--white);
+  transform: rotate(-3deg);
+}
+.tag-arch-recipe {
+  right: 10px; top: 14px;
+  background: #cfd4dc;
+  transform: rotate(3deg);
+}
+/* the player cloud, with the 8 archetypoids as its corners */
+.arch-hull {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 138px;
+  height: 108px;
+  translate: -50% -50%;
+  border: 2px dashed rgba(255,255,255,0.22);
+  border-radius: 46% 54% 50% 50% / 52% 48% 52% 48%;
+}
+.arch-dot {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,0.45);
+  translate: -50% -50%;
+}
+/* corners = real players the archetypes are anchored to */
+.arch-corner {
+  background: var(--white);
+  box-shadow: 0 0 6px rgba(255,255,255,0.55);
+}
+/* everyone else = a blend of those corners */
+.arch-blend {
+  background: transparent;
+  opacity: 0.4;
+}
+/* the player currently being diagnosed */
+.arch-focus {
+  width: 12px;
+  height: 12px;
+  background: #f6bd2e;
+  border-color: rgba(246,189,46,0.8);
+  box-shadow: 0 0 9px rgba(246,189,46,0.75);
+}
+
 .lab-project-body {
   display: flex;
   flex-direction: column;
@@ -3060,6 +3116,15 @@ h1 {
   color: var(--white);
 }
 
+.picks-play-context {
+  margin: 10px 0 14px;
+  font-family: ui-monospace, "SF Mono", monospace;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: rgba(255, 253, 248, 0.45);
+}
+
 .picks-take {
   margin: 0 0 clamp(20px, 3vw, 30px);
   font-family: Georgia, "Times New Roman", serif;
@@ -3311,6 +3376,102 @@ h1 {
 .picks-replay:hover {
   color: var(--white);
   border-color: rgba(255, 253, 248, 0.55);
+}
+
+/* ── Film Room ─────────────────────────────────────────── */
+.filmroom-section {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 64px 24px 80px;
+}
+.filmroom-intro {
+  margin-bottom: 28px;
+}
+.filmroom-intro .card-kicker {
+  display: block;
+  margin-bottom: 6px;
+}
+.filmroom-intro h2 {
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0;
+}
+.filmroom-card {
+  background: #101820;
+  border: 4px solid #101820;
+  border-radius: 16px;
+  box-shadow: 8px 8px 0 #101820;
+  padding: 28px 32px 32px;
+  color: rgba(255, 253, 248, 0.9);
+}
+.filmroom-context {
+  font-family: "SF Mono", "Fira Code", "Consolas", monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  color: rgba(255, 253, 248, 0.42);
+  margin: 0 0 20px;
+  text-transform: uppercase;
+}
+.filmroom-play-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #fffdf8;
+  margin: 0 0 24px;
+}
+.filmroom-chapter {
+  margin-bottom: 22px;
+}
+.filmroom-label {
+  display: block;
+  font-family: "SF Mono", "Fira Code", "Consolas", monospace;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #f4845f;
+  margin-bottom: 6px;
+}
+.filmroom-body {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: rgba(255, 253, 248, 0.82);
+  margin: 0;
+}
+.filmroom-stats {
+  display: flex;
+  gap: 16px;
+  margin-top: 28px;
+  flex-wrap: wrap;
+}
+.filmroom-stat-chip {
+  flex: 1 1 140px;
+  background: rgba(255, 253, 248, 0.06);
+  border: 1px solid rgba(255, 253, 248, 0.1);
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.filmroom-stat-value {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #f5c842;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.filmroom-stat-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: rgba(255, 253, 248, 0.85);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.filmroom-stat-context {
+  font-family: "SF Mono", "Fira Code", "Consolas", monospace;
+  font-size: 0.62rem;
+  color: rgba(255, 253, 248, 0.38);
 }
 
 /* sport bar */
