@@ -29,28 +29,47 @@
     <main class="page">
       <section class="sports-page">
 
-        <div class="now-rightnow">
-          <h1 class="rightnow-heading">What's in My Feed.</h1>
-          <p class="rightnow-sub">Six months of fixtures. Filter by sport, click a day, export to calendar.</p>
+        <div class="cal-pagehead">
+          <div class="cal-pagehead-copy">
+            <span class="card-kicker">Game · Fixtures</span>
+            <h1 class="cal-pagetitle">Fixture Board.</h1>
+            <p class="cal-pagesub">Six months out, eight competitions. Times shown in <span data-tz></span>.</p>
+          </div>
+          <div class="cal-pagehead-actions">
+            <button class="export-cal-btn export-cal-btn-solid" data-export>Export .ics</button>
+          </div>
         </div>
 
         <!-- Filter chips — JS renders -->
         <div class="sports-filter-bar" data-filter-bar aria-label="Sport filters"></div>
+
+        <!-- Next fixtures for followed teams — JS renders -->
+        <div class="cal-nextup-head">
+          <span class="cal-section-label">Next up · your teams</span>
+          <span class="cal-section-note">Chosen from the 6 teams you follow</span>
+        </div>
+        <div class="cal-nextup" data-nextup></div>
 
         <!-- Month nav + export -->
         <div class="cal-nav-row">
           <button class="cal-nav-btn" data-nav="-1" aria-label="Previous">‹</button>
           <span class="cal-month-label" data-month-label></span>
           <button class="cal-nav-btn" data-nav="1" aria-label="Next">›</button>
+          <button class="cal-today-btn" data-today>Today</button>
           <div class="cal-view-toggle" role="group" aria-label="Calendar view">
-            <button class="cal-view-btn active" data-view="month">Month</button>
-            <button class="cal-view-btn" data-view="week">Week</button>
+            <button class="cal-view-btn active" data-view="week">Week</button>
+            <button class="cal-view-btn" data-view="month">Month</button>
           </div>
           <button class="export-cal-btn" data-export>Export .ics</button>
         </div>
 
         <!-- Calendar grid — JS renders -->
-        <div class="cal-grid cal-grid-month" data-cal-grid role="grid" aria-label="Sports calendar"></div>
+        <div class="cal-grid cal-grid-week" data-cal-grid role="grid" aria-label="Sports calendar"></div>
+
+        <div class="cal-footnote">
+          <span data-week-count></span>
+          <span>Times auto-converted to your device timezone (<span data-tz></span>)</span>
+        </div>
 
         <!-- Day detail panel — hidden until day clicked -->
         <div class="cal-detail" data-cal-detail hidden>

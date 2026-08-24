@@ -543,6 +543,7 @@ document.addEventListener("sport-tab-open", function (e) {
     { key:"pl",      label:"PL",      full:"Premier League",   emoji:"⚽️", color:"#3d195b", type:"scoreboard", league:"soccer/eng.1" },
     { key:"ucl",     label:"UCL",     full:"Champions League", emoji:"👑",  color:"#1d47ba", type:"scoreboard", league:"soccer/uefa.champions" },
     { key:"dodgers", label:"Dodgers", full:"LA Dodgers",       emoji:"⚾️", color:"#005a9c", type:"team",       url:ESPN_BASE + "baseball/mlb/teams/19/schedule" },
+    { key:"nfl",     label:"NFL",     full:"NFL",              emoji:"🏈",  color:"#013369", type:"scoreboard", league:"football/nfl" },
     { key:"ncaa",    label:"NCAA",    full:"NCAA Football",    emoji:"🏈",  color:"#bf5700", type:"scoreboard", league:"football/college-football" },
   ];
 
@@ -551,7 +552,7 @@ document.addEventListener("sport-tab-open", function (e) {
   var FOLLOWING = [
     {
       key:"alonso", name:"Fernando Alonso", sport:"Formula 1", emoji:"🏎️", bg:"#003a33", fg:"#7db320",
-      featured:true, badge:"2026 Season", logo:"assets/following/aston-martin.png",
+      featured:true, badge:"2026 Season", logo:"assets/following/aston-martin.png", matchAbbrs:["ALO"],
       facts:["2× World Champion","Aston Martin AMR25","El Plan 33"],
       note:"Watched him dominate in Ferrari red. Still chasing that 3rd title at Aston Martin.",
       players:[
@@ -560,7 +561,7 @@ document.addEventListener("sport-tab-open", function (e) {
     },
     {
       key:"lakers", name:"LA Lakers", sport:"NBA", emoji:"🏀", bg:"#371855", fg:"#d49c1e",
-      featured:true, badge:"Playoffs 🔥", logo:"https://a.espncdn.com/combiner/i?img=/i/teamlogos/nba/500/lal.png",
+      featured:true, badge:"Playoffs 🔥", logo:"https://a.espncdn.com/combiner/i?img=/i/teamlogos/nba/500/lal.png", matchAbbrs:["LAL"],
       facts:["17× NBA Champion","Luka Doncic era","Crypto.com Arena"],
       note:"Been watching since Kobe's 2010 chip. Luka is the franchise now.",
       players:[
@@ -570,7 +571,7 @@ document.addEventListener("sport-tab-open", function (e) {
     },
     {
       key:"xinyu", name:"Wang Xinyu", sport:"WTA Tennis", emoji:"🎾", bg:"#825707", fg:"#fef0c0",
-      featured:true, badge:"Roland Garros 🌸", logo:"",
+      featured:true, badge:"Roland Garros 🌸", logo:"", matchAbbrs:["WANG", "XINYU"],
       facts:["China 🇨🇳","Right-handed","WTA Top 50"],
       note:"Following her rise through the WTA ranks. China's most exciting player.",
       players:[
@@ -579,7 +580,7 @@ document.addEventListener("sport-tab-open", function (e) {
     },
     {
       key:"dodgers", name:"LA Dodgers", sport:"MLB", emoji:"⚾️", bg:"#003a65", fg:"#c43033",
-      logo:"https://a.espncdn.com/combiner/i?img=/i/teamlogos/mlb/500/lad.png",
+      logo:"https://a.espncdn.com/combiner/i?img=/i/teamlogos/mlb/500/lad.png", matchAbbrs:["LAD"],
       facts:["2020 & 2024 Champions","Shohei Ohtani","Dodger Stadium"],
       note:"Yamamoto's arm is unreal. Back-to-back champions — this team is special.",
       players:[
@@ -590,7 +591,7 @@ document.addEventListener("sport-tab-open", function (e) {
     },
     {
       key:"spurs", name:"Tottenham Hotspur", sport:"Premier League", emoji:"⚽️", bg:"#0c1639", fg:"#ffffff",
-      logo:"https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/253.png",
+      logo:"https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/253.png", matchAbbrs:["TOT"],
       facts:["Son Heung-min fan","1961 Double winners","Spurs Stadium, London"],
       note:"Son Heung-min fan since his breakout season. 손흥민.",
       players:[
@@ -600,7 +601,7 @@ document.addEventListener("sport-tab-open", function (e) {
     },
     {
       key:"usc", name:"USC Trojans", sport:"NCAA Football", emoji:"🏈", bg:"#630000", fg:"#d9a624",
-      logo:"https://a.espncdn.com/combiner/i?img=/i/teamlogos/ncaa/500/30.png",
+      logo:"https://a.espncdn.com/combiner/i?img=/i/teamlogos/ncaa/500/30.png", matchAbbrs:["USC"],
       facts:["11× Natl Champions","Fight On!","LA Memorial Coliseum"],
       note:"Local school, big games. Fight On! Watch for the big rivalry matchups.",
       players:[
@@ -612,7 +613,7 @@ document.addEventListener("sport-tab-open", function (e) {
   var ESPN_TO_KEY = {
     "soccer/eng.1":"pl",    "soccer/uefa.champions":"ucl",
     "tennis":"tennis",      "basketball/nba":"nba",
-    "football/college-football":"ncaa", "football/nfl":"ncaa",
+    "football/college-football":"ncaa", "football/nfl":"nfl",
     "racing/f1":"f1",       "baseball/mlb":"dodgers",
   };
 
@@ -626,12 +627,16 @@ document.addEventListener("sport-tab-open", function (e) {
 
   var allEvents     = [];
   var activeFilters = {};
-  SPORTS.forEach(function (s) { activeFilters[s.key] = (s.key === "nba" || s.key === "pl" || s.key === "ucl"); });
+  SPORTS.forEach(function (s) { activeFilters[s.key] = false; });
   var curYear      = today.getFullYear();
   var curMonth     = today.getMonth();
-  var curView      = "month";
+  var curView      = "week";
   var curWeekStart = getWeekStart(today);
   var selDay       = null;
+  var filtersInitialized = false;
+  var filtersTouched = false;
+  var requestedFilterKey = null;
+  var dataLoading = true;
 
   function getWeekStart(d) {
     var w = new Date(d);
@@ -647,6 +652,25 @@ document.addEventListener("sport-tab-open", function (e) {
   function escICS(s)    { return String(s || "").replace(/\\/g,"\\\\").replace(/;/g,"\\;").replace(/,/g,"\\,").replace(/\n/g,"\\n"); }
   function findSport(k) { for (var i = 0; i < SPORTS.length; i++) { if (SPORTS[i].key === k) return SPORTS[i]; } return null; }
 
+  function colorIsLight(color) {
+    var hex = String(color || "").replace("#", "");
+    if (hex.length === 3) hex = hex.charAt(0) + hex.charAt(0) + hex.charAt(1) + hex.charAt(1) + hex.charAt(2) + hex.charAt(2);
+    if (!/^[0-9a-f]{6}$/i.test(hex)) return false;
+    var r = parseInt(hex.substring(0, 2), 16) / 255;
+    var g = parseInt(hex.substring(2, 4), 16) / 255;
+    var b = parseInt(hex.substring(4, 6), 16) / 255;
+    return (0.2126 * r + 0.7152 * g + 0.0722 * b) > 0.8;
+  }
+
+  function crestHTML(abbr, logo, color, size) {
+    var bg = color || "#20242a";
+    var fg = colorIsLight(bg) ? "#20242a" : "#fffdf8";
+    return "<span class='crest' style='--crest-size:" + size + "px;--crest-bg:" + escA(bg) + ";--crest-fg:" + fg + "'>" +
+      "<span class='crest-abbr'>" + escH(abbr || "?") + "</span>" +
+      (logo ? "<img src='" + escA(logo) + "' alt='' loading='lazy' onerror=\"this.style.display='none'\" />" : "") +
+    "</span>";
+  }
+
   var elFilters   = document.querySelector("[data-filter-bar]");
   var elGrid      = document.querySelector("[data-cal-grid]");
   var elLabel     = document.querySelector("[data-month-label]");
@@ -654,28 +678,88 @@ document.addEventListener("sport-tab-open", function (e) {
   var elDetDate   = document.querySelector("[data-detail-date]");
   var elDetEvts   = document.querySelector("[data-detail-events]");
   var elFollowing = document.querySelector("[data-following-grid]");
+  var elNextUp    = document.querySelector("[data-nextup]");
+  var elWeekCount = document.querySelector("[data-week-count]");
 
   var MONTHS       = ["January","February","March","April","May","June","July","August","September","October","November","December"];
   var MONTHS_SHORT = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   var DOWS         = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 
+  var SEASON_NOTE = {
+    nba: "off-season · Oct 21",
+    ncaa: "week 1 · Sep 5",
+    tennis: "US Open · Aug 31",
+    nfl: "preseason wk 3",
+    pl: "", ucl: "", f1: "", dodgers: "",
+  };
+
+  function visibleRange() {
+    if (curView === "week") {
+      var weekEnd = new Date(curWeekStart);
+      weekEnd.setDate(weekEnd.getDate() + 6);
+      return { start: toDs(curWeekStart), end: toDs(weekEnd) };
+    }
+    return {
+      start: curYear + "-" + pad2(curMonth + 1) + "-01",
+      end: curYear + "-" + pad2(curMonth + 1) + "-" + pad2(new Date(curYear, curMonth + 1, 0).getDate()),
+    };
+  }
+
+  function eventOverlaps(ev, start, end) {
+    var evStart = ev.startDate || ev.date || "";
+    var evEnd = ev.endDate || ev.date || "";
+    return evStart <= end && evEnd >= start;
+  }
+
+  function sportRangeCount(key, start, end) {
+    var count = 0;
+    for (var i = 0; i < allEvents.length; i++) {
+      if (allEvents[i].sport === key && eventOverlaps(allEvents[i], start, end)) count++;
+    }
+    return count;
+  }
+
+  function nextSportEvent(key) {
+    var nowMs = Date.now();
+    var found = null;
+    for (var i = 0; i < allEvents.length; i++) {
+      var ev = allEvents[i];
+      var evMs = new Date(ev.isoDate || (ev.date + "T12:00:00")).getTime();
+      if (ev.sport === key && evMs >= nowMs && (!found || evMs < found.ms)) found = { ev:ev, ms:evMs };
+    }
+    return found && found.ev;
+  }
+
   function renderFilters() {
     if (!elFilters) return;
-    var btns = SPORTS.map(function (s) {
+    var range = visibleRange();
+    var arranged = SPORTS.map(function (s, index) {
+      return { sport:s, index:index, count:sportRangeCount(s.key, range.start, range.end), next:nextSportEvent(s.key) };
+    });
+    arranged.sort(function (a, b) {
+      if (!!b.count !== !!a.count) return b.count ? 1 : -1;
+      if (!!b.next !== !!a.next) return b.next ? 1 : -1;
+      return a.index - b.index;
+    });
+    var btns = arranged.map(function (item) {
+      var s = item.sport;
       var active = activeFilters[s.key];
-      return "<button class='sport-btn" + (active ? "" : " inactive") + "'" +
+      var note = "";
+      if (dataLoading && !allEvents.length) note = "loading";
+      else if (item.count) note = item.count + (curView === "week" ? " this week" : " this month");
+      else if (item.next) {
+        var nd = new Date(item.next.isoDate || (item.next.date + "T12:00:00"));
+        note = "next " + MONTHS_SHORT[nd.getMonth()] + " " + nd.getDate();
+      } else note = SEASON_NOTE[s.key] || "no fixtures";
+      return "<button class='sport-pill" + (active ? " is-active" : "") + (!item.count && !item.next ? " sport-pill-offseason" : "") + "'" +
              " data-fkey='" + s.key + "' style='--cc:" + s.color + "'" +
              " aria-label='" + escH(s.full) + " filter' aria-pressed='" + (active ? "true" : "false") + "'>" +
-             "<span class='sport-emoji'>" + s.emoji + "</span>" +
+             "<span class='sport-pill-emoji'>" + s.emoji + "</span>" +
+             "<span class='sport-pill-copy'><span class='sport-pill-label'>" + escH(s.label) + "</span>" +
+             "<span class='sport-pill-note'>" + escH(note) + "</span></span>" +
              "</button>";
     }).join("");
-    elFilters.innerHTML =
-      "<div class='cal-filter-inner'>" +
-        "<span class='sport-bar-dec' aria-hidden='true'>«</span>" +
-        btns +
-        "<span class='sport-bar-dec' aria-hidden='true'>»</span>" +
-      "</div>" +
-      "<p class='cal-filter-hint'>Tap a sport to show or hide it on the calendar</p>";
+    elFilters.innerHTML = "<div class='cal-filter-inner'>" + btns + "</div>";
   }
 
   function eventsOnDay(ds) {
@@ -701,6 +785,9 @@ document.addEventListener("sport-tab-open", function (e) {
       elGrid.className = "cal-grid cal-grid-month";
       renderMonthCal();
     }
+    renderFilters();
+    renderNextUp();
+    updateFootnote();
   }
 
   function renderMonthCal() {
@@ -739,7 +826,7 @@ document.addEventListener("sport-tab-open", function (e) {
             " data-allday='1'>" +
             escH(ev.name.split(" ")[0]) + "</span>";
         } else {
-          var lbl = (ev.teams || ev.name || "").substring(0, 11);
+          var lbl = (ev.teams || ev.name || "").substring(0, 14);
           chipsHtml += "<span class='cal-chip'" +
             " style='--chip-bg:" + col + "'" +
             " data-sport='" + escA(spKey) + "'" +
@@ -748,7 +835,8 @@ document.addEventListener("sport-tab-open", function (e) {
             " data-venue='" + escA(ev.venue || "") + "'" +
             " data-status='" + escA(ev.status || "pre") + "'" +
             " data-score='" + escA(ev.score || "") + "'>" +
-            escH(lbl) + "</span>";
+            crestHTML(ev.homeAbbr, ev.homeLogo, ev.homeColor, 14) +
+            "<span class='cal-chip-text'>" + escH(lbl) + "</span></span>";
         }
       }
       if (sorted.length > 2) {
@@ -772,6 +860,7 @@ document.addEventListener("sport-tab-open", function (e) {
         "<span class='cal-day-num'>" + d + "</span>" +
         (chipsHtml ? "<div class='cal-chips'>" + chipsHtml + "</div>" : "") +
         (dotsHtml  ? "<div class='cal-dots cal-dots-mobile'>" + dotsHtml + "</div>" : "") +
+        (dayEvs.length ? "<span class='cal-mobile-count'>" + dayEvs.length + "</span>" : "") +
         "</div>";
     }
 
@@ -795,18 +884,16 @@ document.addEventListener("sport-tab-open", function (e) {
 
     days.forEach(function (d) {
       var ds = toDs(d);
-      var isT = ds === todayStr;
-      html += "<div class='cal-dow" + (isT ? " cal-dow-today" : "") + "'>" +
-        DOWS[d.getDay()] + "<br><span class='cal-dow-num'>" + d.getDate() + "</span></div>";
-    });
-
-    days.forEach(function (d) {
-      var ds = toDs(d);
       var dayEvs = eventsOnDay(ds);
       var isT = ds === todayStr;
+      var isPast = ds < todayStr;
       var inner = "";
+      dayEvs.sort(function (a, b) {
+        if (!!a.allDay !== !!b.allDay) return a.allDay ? -1 : 1;
+        return new Date(a.isoDate || (a.date + "T12:00:00")) - new Date(b.isoDate || (b.date + "T12:00:00"));
+      });
       if (!dayEvs.length) {
-        inner = "<span class='week-no-games'>—</span>";
+        inner = "<span class='week-no-games'><strong>No games</strong><span>for your sports</span></span>";
       } else {
         for (var i = 0; i < dayEvs.length; i++) {
           var ev = dayEvs[i];
@@ -815,19 +902,21 @@ document.addEventListener("sport-tab-open", function (e) {
           var wSpKey = sp ? sp.key : "";
           if (ev.allDay) {
             inner += "<div class='week-ev week-ev-allday'" +
-              " style='background:" + col + "18;border-left-color:" + col + "'" +
+              " style='border-left-color:" + col + "'" +
               " data-date='" + ds + "'" +
               " data-sport='" + escA(wSpKey) + "'" +
               " data-teams='" + escA(ev.name || "") + "'" +
               " data-venue='" + escA(ev.venue || "") + "'" +
               " data-allday='1'>" +
-              "<span class='week-ev-emoji'>" + (sp ? sp.emoji : "") + "</span>" +
-              "<span class='week-ev-title'>" + escH(ev.name) + "</span>" +
-              "<span class='week-ev-sub'>" + escH(ev.tier || "") + "</span>" +
+              "<span class='week-ev-top'><strong>All day</strong><span>" + escH(sp ? sp.label : "") + "</span></span>" +
+              "<span class='week-ev-matchup'><span class='week-ev-tournament-icon'>" + (sp ? sp.emoji : "") + "</span>" +
+              "<span class='week-ev-title'>" + escH(ev.name) + "</span></span>" +
+              "<span class='week-ev-broadcast'>" + escH(ev.tier || ev.venue || "Tournament") + "</span>" +
             "</div>";
           } else {
             var liveHtml = ev.status === "in" ? "<span class='game-status-live'>LIVE</span>" : "";
-            inner += "<div class='week-ev'" +
+            var scoreHtml = ev.status === "post" && ev.score ? "<span class='week-ev-score'>" + escH(ev.score) + "</span>" : liveHtml;
+            inner += "<div class='week-ev" + (ev.status === "post" ? " is-post" : "") + "'" +
               " style='border-left-color:" + col + "'" +
               " data-date='" + ds + "'" +
               " data-sport='" + escA(wSpKey) + "'" +
@@ -836,18 +925,112 @@ document.addEventListener("sport-tab-open", function (e) {
               " data-venue='" + escA(ev.venue || "") + "'" +
               " data-status='" + escA(ev.status || "pre") + "'" +
               " data-score='" + escA(ev.score || "") + "'>" +
-              "<span class='week-ev-emoji'>" + (sp ? sp.emoji : "") + "</span>" +
-              "<span class='week-ev-title'>" + escH(ev.teams || ev.name) + "</span>" +
-              "<span class='week-ev-sub'>" + escH(ev.time || "") + (ev.broadcast ? " · " + escH(ev.broadcast) : "") + "</span>" +
-              liveHtml +
+              "<span class='week-ev-top'><strong>" + escH(ev.time || "TBD") + "</strong>" + scoreHtml + "</span>" +
+              "<span class='week-ev-matchup'>" +
+                crestHTML(ev.awayAbbr, ev.awayLogo, ev.awayColor, 21) +
+                "<span class='week-ev-title'>" + escH(ev.teams || ev.name) + "</span>" +
+                crestHTML(ev.homeAbbr, ev.homeLogo, ev.homeColor, 21) +
+              "</span>" +
+              "<span class='week-ev-broadcast'>" + escH(ev.broadcast || "Broadcast TBD") + "</span>" +
             "</div>";
           }
         }
       }
-      html += "<div class='cal-week-col" + (isT ? " cal-today" : "") + (ds === selDay ? " cal-selected" : "") + "' data-date='" + ds + "'>" + inner + "</div>";
+      html += "<div class='cal-weekday" + (isT ? " cal-today" : "") + (isPast ? " cal-past" : "") + (ds === selDay ? " cal-selected" : "") + "' data-date='" + ds + "'>" +
+        "<div class='cal-weekhd'><span>" + DOWS[d.getDay()].toUpperCase() + "</span><strong>" + d.getDate() + "</strong></div>" +
+        "<div class='cal-weekbody'>" + inner + "</div>" +
+      "</div>";
     });
 
     elGrid.innerHTML = html;
+  }
+
+  function followedRank(ev) {
+    var teamAbbrs = [ev.awayAbbr || "", ev.homeAbbr || ""].map(function (value) { return String(value).toUpperCase(); });
+    var haystack = ((ev.name || "") + " " + (ev.awayName || "") + " " + (ev.homeName || "")).toUpperCase();
+    for (var i = 0; i < FOLLOWING.length; i++) {
+      var tokens = FOLLOWING[i].matchAbbrs || [];
+      for (var j = 0; j < tokens.length; j++) {
+        var token = String(tokens[j]).toUpperCase();
+        if (teamAbbrs.indexOf(token) !== -1 || (!ev.awayAbbr && haystack.indexOf(token) !== -1)) return i;
+      }
+    }
+    return 999;
+  }
+
+  function eventTimeMs(ev) {
+    return new Date(ev.isoDate || (ev.date + "T12:00:00")).getTime();
+  }
+
+  function countdownLabel(ms) {
+    var diff = ms - Date.now();
+    var hours = Math.max(0, Math.ceil(diff / 3600000));
+    if (hours < 24) return { text:hours <= 1 ? "< 1 hour" : "in " + hours + "h", soon:true };
+    var days = Math.ceil(diff / 86400000);
+    return { text:days === 1 ? "tomorrow" : "in " + days + " days", soon:false };
+  }
+
+  function nextUpCard(ev) {
+    var sp = findSport(ev.sport);
+    var color = sp ? sp.color : "#20242a";
+    var when = new Date(ev.isoDate || (ev.date + "T12:00:00"));
+    var countdown = countdownLabel(when.getTime());
+    var dateLabel = DOWS[when.getDay()] + " " + when.getDate() + " · " + (ev.allDay ? "All day" : (ev.time || "TBD"));
+    var matchup = ev.awayName && ev.homeName ? ev.awayName + " @ " + ev.homeName : (ev.teams || ev.name || "Fixture");
+    var eventLabel = sp ? sp.label : "Fixture";
+    if (ev.eventLabel && !/^(std|regular season)$/i.test(ev.eventLabel) && ev.eventLabel.toLowerCase() !== eventLabel.toLowerCase()) {
+      eventLabel += " · " + ev.eventLabel;
+    }
+    return "<article class='cal-nextup-card'>" +
+      "<div class='cal-nextup-top'><span class='cal-nextup-league'><i style='background:" + color + "'></i>" + escH(eventLabel) + "</span>" +
+      "<span class='cal-nextup-countdown" + (countdown.soon ? " is-soon" : "") + "'>" + escH(countdown.text) + "</span></div>" +
+      "<div class='cal-nextup-match'>" +
+        crestHTML(ev.awayAbbr || (sp && sp.label), ev.awayLogo, ev.awayColor || color, 44) +
+        "<strong>" + escH(matchup) + "</strong>" +
+        crestHTML(ev.homeAbbr || (sp && sp.label), ev.homeLogo, ev.homeColor || color, 44) +
+      "</div>" +
+      "<div class='cal-nextup-bottom'><span>" + escH(dateLabel) + "</span>" +
+      "<button class='game-add-cal' data-add-cal='" + escA(ev.id) + "'>+ Cal</button></div>" +
+    "</article>";
+  }
+
+  function renderNextUp() {
+    if (!elNextUp) return;
+    var nowMs = Date.now();
+    var candidates = allEvents.filter(function (ev) {
+      return activeFilters[ev.sport] && eventTimeMs(ev) > nowMs;
+    });
+    candidates.sort(function (a, b) {
+      var aFollow = followedRank(a), bFollow = followedRank(b);
+      var aMatched = aFollow < 999, bMatched = bFollow < 999;
+      if (aMatched !== bMatched) return aMatched ? -1 : 1;
+      return eventTimeMs(a) - eventTimeMs(b);
+    });
+    var picked = [], seen = {};
+    for (var i = 0; i < candidates.length && picked.length < 3; i++) {
+      var key = candidates[i].sport + "-" + candidates[i].id;
+      if (!seen[key]) { seen[key] = true; picked.push(candidates[i]); }
+    }
+    if (!picked.length) {
+      elNextUp.innerHTML = "<div class='cal-nextup-empty'>" +
+        (dataLoading ? "Loading upcoming fixtures…" : "No upcoming fixtures for the selected competitions.") +
+      "</div>";
+      return;
+    }
+    elNextUp.innerHTML = picked.map(nextUpCard).join("");
+  }
+
+  function updateFootnote() {
+    if (!elWeekCount) return;
+    var start = toDs(curWeekStart);
+    var endDate = new Date(curWeekStart);
+    endDate.setDate(endDate.getDate() + 6);
+    var end = toDs(endDate);
+    var count = 0;
+    for (var i = 0; i < allEvents.length; i++) {
+      if (activeFilters[allEvents[i].sport] && eventOverlaps(allEvents[i], start, end)) count++;
+    }
+    elWeekCount.textContent = count + (count === 1 ? " game" : " games") + " this week · dimmed rows are finished";
   }
 
   function renderDetail(ds) {
@@ -886,7 +1069,10 @@ document.addEventListener("sport-tab-open", function (e) {
         "</div>";
     }
     return "<div class='detail-card'>" +
-      "<div class='detail-sport-dot' style='background:" + color + "'>" + emoji + "</div>" +
+      "<div class='detail-crests'>" +
+        crestHTML(ev.awayAbbr, ev.awayLogo, ev.awayColor || color, 32) +
+        crestHTML(ev.homeAbbr, ev.homeLogo, ev.homeColor || color, 32) +
+      "</div>" +
       "<div class='detail-card-body'>" +
         "<span class='detail-teams'>" + escH(ev.teams || ev.name) + "</span>" +
         "<span class='detail-meta'>" + escH(ev.time || "") + (ev.broadcast ? " · " + escH(ev.broadcast) : "") + "</span>" +
@@ -1050,12 +1236,22 @@ document.addEventListener("sport-tab-open", function (e) {
       renderCal();
       return;
     }
+    // Reset the active view to today
+    if (e.target.closest("[data-today]")) {
+      curWeekStart = getWeekStart(today);
+      curYear = today.getFullYear();
+      curMonth = today.getMonth();
+      selDay = null;
+      if (elDetail) elDetail.setAttribute("hidden", "");
+      renderCal();
+      return;
+    }
     // Filter chip
     var chipEl = e.target.closest("[data-fkey]");
     if (chipEl && elFilters && elFilters.contains(chipEl)) {
       var key = chipEl.dataset.fkey;
       activeFilters[key] = !activeFilters[key];
-      chipEl.classList.toggle("inactive", !activeFilters[key]);
+      filtersTouched = true;
       renderCal();
       if (selDay) renderDetail(selDay);
       return;
@@ -1156,11 +1352,39 @@ document.addEventListener("sport-tab-open", function (e) {
 
   function fetchAll() {
     addTennisEvents();
+    var tasks = [];
     SPORTS.forEach(function (s) {
       if (s.type === "static") return;
-      if (s.type === "team") fetchTeam(s);
-      else                   fetchScoreboard(s);
+      tasks.push(s.type === "team" ? fetchTeam(s) : fetchScoreboard(s));
     });
+    Promise.all(tasks).then(function () {
+      dataLoading = false;
+      initializeFilters();
+      renderCal();
+      if (selDay) renderDetail(selDay);
+    });
+  }
+
+  function initializeFilters() {
+    if (filtersInitialized || filtersTouched) return;
+    filtersInitialized = true;
+    SPORTS.forEach(function (s) { activeFilters[s.key] = false; });
+    if (requestedFilterKey) {
+      activeFilters[requestedFilterKey] = true;
+      return;
+    }
+    var nowMs = Date.now();
+    var opened = 0;
+    SPORTS.forEach(function (s) {
+      var hasUpcoming = allEvents.some(function (ev) {
+        return ev.sport === s.key && eventTimeMs(ev) >= nowMs;
+      });
+      activeFilters[s.key] = hasUpcoming;
+      if (hasUpcoming) opened++;
+    });
+    if (!opened) {
+      ["pl", "ucl", "dodgers", "nfl", "f1"].forEach(function (key) { activeFilters[key] = true; });
+    }
   }
 
   function addTennisEvents() {
@@ -1180,39 +1404,79 @@ document.addEventListener("sport-tab-open", function (e) {
   }
 
   function fetchTeam(sport) {
-    fetch(sport.url)
+    return fetch(sport.url)
       .then(function (r) { return r.json(); })
       .then(function (d) {
-        var evs = d.events || [];
-        for (var i = 0; i < evs.length; i++) {
-          var n = normalizeEv(evs[i], sport.key);
-          if (n) allEvents.push(n);
-        }
-        renderCal();
-        if (selDay) renderDetail(selDay);
+        ingestEvents(d.events || [], sport.key);
       })
       .catch(function () {});
   }
 
   function fetchScoreboard(sport) {
     var url = ESPN_BASE + sport.league + "/scoreboard?dates=" + DATE_FROM + "-" + DATE_TO + "&limit=300";
-    fetch(url)
+    return fetch(url)
       .then(function (r) { return r.json(); })
       .then(function (d) {
         var evs = d.events || [];
-        for (var i = 0; i < evs.length; i++) {
-          var n = normalizeEv(evs[i], sport.key);
-          if (n) allEvents.push(n);
-        }
-        renderCal();
-        if (selDay) renderDetail(selDay);
+        ingestEvents(evs, sport.key);
+        if (sport.key === "nfl" && nflNeedsWeeklyFallback(evs)) return fetchNFLWeeks(sport);
       })
       .catch(function () {});
+  }
+
+  function nflNeedsWeeklyFallback(events) {
+    if (events.length < 8) return true;
+    var dates = events.map(function (ev) { return new Date(ev.date || 0).getTime(); }).filter(function (value) { return isFinite(value); });
+    if (dates.length < 2) return true;
+    return (Math.max.apply(Math, dates) - Math.min.apply(Math, dates)) < 45 * 86400000;
+  }
+
+  function fetchJsonSafe(url) {
+    return fetch(url)
+      .then(function (r) { return r.json(); })
+      .catch(function () { return { events:[] }; });
+  }
+
+  function fetchNFLWeeks(sport) {
+    var season = rangeStart.getMonth() <= 1 ? rangeStart.getFullYear() - 1 : rangeStart.getFullYear();
+    var urls = [];
+    var w;
+    for (w = 1; w <= 3; w++) {
+      urls.push(ESPN_BASE + "football/nfl/scoreboard?dates=" + season + "&seasontype=1&week=" + w);
+    }
+    for (w = 1; w <= 18; w++) {
+      urls.push(ESPN_BASE + "football/nfl/scoreboard?dates=" + season + "&seasontype=2&week=" + w);
+    }
+
+    function nextBatch(index) {
+      if (index >= urls.length) return Promise.resolve();
+      var batch = urls.slice(index, index + 6).map(fetchJsonSafe);
+      return Promise.all(batch).then(function (results) {
+        results.forEach(function (d) { ingestEvents(d.events || [], sport.key); });
+        return nextBatch(index + 6);
+      }).catch(function () { return nextBatch(index + 6); });
+    }
+
+    return nextBatch(0);
+  }
+
+  function ingestEvents(events, sportKey) {
+    var existing = {};
+    for (var i = 0; i < allEvents.length; i++) existing[allEvents[i].sport + ":" + allEvents[i].id] = true;
+    for (var j = 0; j < events.length; j++) {
+      var n = normalizeEv(events[j], sportKey);
+      var key = n && n.sport + ":" + n.id;
+      if (n && !existing[key]) {
+        existing[key] = true;
+        allEvents.push(n);
+      }
+    }
   }
 
   function normalizeEv(ev, sportKey) {
     if (!ev.date) return null;
     var ds   = ev.date.substring(0, 10);
+    if (ds < toDs(rangeStart) || ds > toDs(rangeEnd)) return null;
     var comp = (ev.competitions && ev.competitions[0]) || {};
     var stat = (comp.status && comp.status.type) || {};
     var state = stat.state || "pre";
@@ -1227,6 +1491,8 @@ document.addEventListener("sport-tab-open", function (e) {
     }
     var comps = comp.competitors || [];
     var teams = "", score = "";
+    var awayAbbr = "", homeAbbr = "", awayName = "", homeName = "";
+    var awayLogo = "", homeLogo = "", awayColor = "", homeColor = "";
     if (comps.length >= 2) {
       var away = null, home = null;
       for (var i = 0; i < comps.length; i++) {
@@ -1235,11 +1501,19 @@ document.addEventListener("sport-tab-open", function (e) {
       }
       if (!away) away = comps[0];
       if (!home) home = comps[1];
-      var aA = (away.team && (away.team.abbreviation || away.team.shortDisplayName)) || "?";
-      var hA = (home.team && (home.team.abbreviation || home.team.shortDisplayName)) || "?";
-      teams = aA + " @ " + hA;
+      awayAbbr = (away.team && (away.team.abbreviation || away.team.shortDisplayName)) || "?";
+      homeAbbr = (home.team && (home.team.abbreviation || home.team.shortDisplayName)) || "?";
+      awayName = (away.team && (away.team.shortDisplayName || away.team.displayName || away.team.name)) || awayAbbr;
+      homeName = (home.team && (home.team.shortDisplayName || home.team.displayName || home.team.name)) || homeAbbr;
+      awayLogo = (away.team && (away.team.logo || (away.team.logos && away.team.logos[0] && away.team.logos[0].href))) || "";
+      homeLogo = (home.team && (home.team.logo || (home.team.logos && home.team.logos[0] && home.team.logos[0].href))) || "";
+      awayColor = away.team && away.team.color ? (String(away.team.color).charAt(0) === "#" ? away.team.color : "#" + away.team.color) : "";
+      homeColor = home.team && home.team.color ? (String(home.team.color).charAt(0) === "#" ? home.team.color : "#" + home.team.color) : "";
+      teams = awayAbbr + " @ " + homeAbbr;
       if ((state === "in" || state === "post") && away.score != null && home.score != null) {
-        score = away.score + " – " + home.score;
+        var awayScore = typeof away.score === "object" ? (away.score.displayValue || away.score.value || "") : away.score;
+        var homeScore = typeof home.score === "object" ? (home.score.displayValue || home.score.value || "") : home.score;
+        score = awayScore + " – " + homeScore;
       }
     } else {
       teams = ev.shortName || ev.name || "";
@@ -1250,6 +1524,11 @@ document.addEventListener("sport-tab-open", function (e) {
       sport: sportKey, name: ev.name || teams || "",
       teams: teams, time: timeStr, venue: venue,
       broadcast: broadcast, status: state, score: score,
+      awayAbbr: awayAbbr, homeAbbr: homeAbbr,
+      awayName: awayName, homeName: homeName,
+      awayLogo: awayLogo, homeLogo: homeLogo,
+      awayColor: awayColor, homeColor: homeColor,
+      eventLabel: (comp.notes && comp.notes[0] && comp.notes[0].headline) || (comp.type && (comp.type.abbreviation || comp.type.text)) || "",
     };
   }
 
@@ -1299,9 +1578,16 @@ document.addEventListener("sport-tab-open", function (e) {
   if (urlSport) {
     var targetKey = ESPN_TO_KEY[decodeURIComponent(urlSport)];
     if (targetKey) {
-      SPORTS.forEach(function (s) { activeFilters[s.key] = (s.key === targetKey); });
+      requestedFilterKey = targetKey;
     }
   }
+
+  var tzText = "Local";
+  try {
+    var tzParts = new Date().toLocaleTimeString("en-US", { timeZoneName:"short" }).split(/\s+/);
+    tzText = tzParts[tzParts.length - 1] || Intl.DateTimeFormat().resolvedOptions().timeZone || "Local";
+  } catch (e) {}
+  [].forEach.call(document.querySelectorAll("[data-tz]"), function (el) { el.textContent = tzText; });
 
   renderFilters();
   renderCal();
@@ -1309,4 +1595,3 @@ document.addEventListener("sport-tab-open", function (e) {
   fetchAll();
 
 })();
-
